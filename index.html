@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Modern Pro Editor - Large Icons</title>
+<title>Modern Pro Editor - Large Close</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
@@ -19,7 +19,7 @@
     #tabs-container {
         display: flex;
         align-items: center;
-        height: 60px; /* 增加高度以容納更大的圖示 */
+        height: 54px; /* 稍微增加高度，讓大按鈕不顯得擁擠 */
         background: #101010; 
         padding: 0 16px;
         box-sizing: border-box;
@@ -31,54 +31,48 @@
         align-items: center;
         height: 100%;
         overflow-x: auto;
-        gap: 12px; /* 增加分頁間距 */
+        gap: 10px;
         scrollbar-width: none;
     }
     #tabs::-webkit-scrollbar { display: none; }
 
-    /* ===== 現代化全圓角分頁 (現代化風格) ===== */
+    /* ===== 現代化全圓角分頁 ===== */
     .tab {
         display: flex;
         align-items: center;
-        height: 42px; /* 分頁高度調大 */
-        padding: 0 12px 0 16px;
-        background: rgba(255, 255, 255, 0.05);
-        color: #999;
+        height: 36px;
+        padding: 0 10px 0 14px; /* 右邊縮短一點，因為叉叉按鈕自帶 Padding */
+        background: rgba(255, 255, 255, 0.04);
+        color: #808080;
         cursor: pointer;
         user-select: none;
-        font-size: 14px; /* 字體稍微放大 */
-        border-radius: 12px; /* 全圓角 (更加現代) */
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        min-width: 160px; /* 增加最小寬度 */
+        font-size: 13px;
+        border-radius: 10px; /* 全圓角 */
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 140px;
         box-sizing: border-box;
     }
 
     .tab:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+        color: #bbb;
     }
 
     .tab.active {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.12);
         color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     }
 
-    /* ===== 放大後的檔案圖示 ===== */
     .tab-icon {
-        width: 20px; /* 從 14px 放大到 20px */
-        height: 20px;
-        margin-right: 12px;
-        opacity: 0.7;
-        stroke-width: 2px;
+        width: 15px;
+        height: 15px;
+        margin-right: 10px;
+        opacity: 0.6;
     }
-    .active .tab-icon {
-        opacity: 1;
-        color: #007acc; /* 啟動中的圖示給予一點色彩辨識 */
-    }
+    .active .tab-icon { opacity: 1; }
 
     .tab-label {
         flex: 1;
@@ -86,18 +80,17 @@
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: 500;
-        letter-spacing: 0.3px;
     }
 
     /* ===== 放大後的關閉按鈕 ===== */
     .close {
-        width: 28px;
-        height: 28px;
-        margin-left: 8px;
+        width: 24px;  /* 寬度增加 */
+        height: 24px; /* 高度增加 */
+        margin-left: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
+        border-radius: 6px; /* 稍微方圓，更有現代感 */
         transition: all 0.2s;
     }
 
@@ -106,56 +99,55 @@
     }
 
     .close svg {
-        width: 12px;
-        height: 12px;
+        width: 11px; /* 圖示本身也調大 */
+        height: 11px;
         stroke: currentColor;
-        stroke-width: 3px;
+        stroke-width: 2.5px; /* 線條稍微加粗一點 */
     }
 
+    /* 點擊叉叉時變紅（可選）*/
     .close:active {
         background: #e81123;
         color: white;
     }
 
-    /* ===== 右側加號按鈕 ===== */
+    /* ===== 右側圓形加號按鈕 ===== */
     .add-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         margin-left: 12px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.04);
         color: #888;
         cursor: pointer;
         transition: all 0.2s;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .add-btn:hover {
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.1);
         color: #fff;
         transform: scale(1.1);
-        border-color: rgba(255, 255, 255, 0.2);
     }
 
     .add-btn svg {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         stroke: currentColor;
-        stroke-width: 2.5px;
+        stroke-width: 2.2px;
     }
 
     /* ===== 編輯器區域 ===== */
     #editor {
-        width: calc(100% - 32px);
-        height: calc(100% - 76px); /* 扣除 Tab 欄高度與邊距 */
-        margin: 0 16px 16px 16px;
-        border-radius: 16px; /* 編輯器本體圓角也加大 */
+        width: calc(100% - 24px);
+        height: calc(100% - 66px); /* 扣除 Tab 欄與邊距 */
+        margin: 0 12px 12px 12px;
+        border-radius: 12px;
         overflow: hidden;
-        border: 1px solid #282828;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border: 1px solid #252525;
     }
 </style>
 </head>
@@ -164,7 +156,7 @@
 
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn" title="New Tab">
+    <div class="add-btn" id="add-tab-btn">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -201,7 +193,7 @@ require(['vs/editor/editor.main'], () => {
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'Main.lua', code: '-- Modern Interface\nprint("Hello Modern Editor")' }
+        { id: 'script_1', name: 'Main.lua', code: '-- Modern UI Ready\nprint("Hello World")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
@@ -209,14 +201,14 @@ require(['vs/editor/editor.main'], () => {
         value: '',
         language: 'lua',
         theme: 'custom-dark',
-        fontSize: 15,
+        fontSize: 14,
         minimap: { enabled: false },
         automaticLayout: true,
         fontFamily: "'Cascadia Code', 'Consolas', monospace",
         cursorSmoothCaretAnimation: "on",
         cursorBlinking: "smooth",
         smoothScrolling: true,
-        padding: { top: 16 }
+        padding: { top: 12 }
     });
 
     const tabsDiv = document.getElementById('tabs');
@@ -232,13 +224,12 @@ require(['vs/editor/editor.main'], () => {
             const tab = document.createElement('div');
             tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
             
-            // 檔案圖示
-            const iconSvg = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+            const iconSvg = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
             
             tab.innerHTML = `
                 ${iconSvg}
                 <span class="tab-label">${t.name}</span>
-                <div class="close">
+                <div class="close" title="Close Tab">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
