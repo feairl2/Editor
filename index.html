@@ -10,43 +10,42 @@
 html,body{
     margin:0;
     height:100%;
-    background:#080808; /* 稍微加深底色以貼合圖示 */
+    background:#080808;
     font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
     overflow:hidden;
 }
 
-/* ===== TAB BAR ===== */
+/* ===== TAB BAR CONTAINER ===== */
 #tabs-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 35px; /* 高度調窄 */
+    height: 38px; 
     background: #0d0d0d;
     border-bottom: 1px solid #1a1a1a;
-    padding-right: 10px;
 }
 
 #tabs {
     display: flex;
-    align-items: flex-end; /* 讓分頁靠下對齊 */
+    align-items: flex-end; 
     height: 100%;
-    gap: 0px;
 }
 
 /* ===== TAB ===== */
 .tab {
     display: flex;
     align-items: center;
-    height: 30px;
-    padding: 0 12px;
+    height: 100%; /* 讓它撐滿容器高度 */
+    padding: 0 14px;
     background: transparent;
-    color: #969696;
+    color: #858585;
     cursor: pointer;
     user-select: none;
     font-size: 12px;
     position: relative;
     border-right: 1px solid #1a1a1a;
-    transition: background .1s;
+    box-sizing: border-box; /* 確保邊框計算正確 */
+    transition: background .12s, color .12s;
 }
 
 .tab:hover {
@@ -54,12 +53,12 @@ html,body{
     color: #ccc;
 }
 
+/* ===== 加粗的頂部線條 ===== */
 .tab.active {
     background: #111111;
     color: #ffffff;
-    /* 選中時的頂部高亮條 */
-    border-top: 1px solid #3e3e3e; 
-    height: 31px; /* 稍微高一點點覆蓋底邊 */
+    /* 修改這裡：將線條加粗到 2.5px 或 3px，並給予更明亮的顏色 */
+    border-top: 2.5px solid #4a4a4a; 
 }
 
 /* 分頁圖示 */
@@ -67,13 +66,12 @@ html,body{
     width: 14px;
     height: 14px;
     margin-right: 8px;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 .tab-content {
     display: flex;
     align-items: center;
-    gap: 8px;
 }
 
 .tab input.rename {
@@ -82,62 +80,65 @@ html,body{
     outline: none;
     color: #ffffff;
     font-size: 12px;
-    width: 60px;
+    width: 65px;
 }
 
-/* ===== CLOSE BUTTON (極細) ===== */
+/* ===== 關閉按鈕 (視覺細、點擊區大) ===== */
 .close {
-    width: 14px;
-    height: 14px;
-    margin-left: 8px;
+    width: 22px; 
+    height: 22px; 
+    margin-left: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 2px;
+    border-radius: 4px;
 }
 
 .close:hover {
-    background: #333;
+    background: #2a2a2a;
 }
 
 .close svg {
-    width: 8px;
-    height: 8px;
+    width: 9px; 
+    height: 9px;
     stroke: #8f8f8f;
-    stroke-width: 1.2px;
+    stroke-width: 1.8px; /* 線條稍微加強一點點視覺感 */
 }
 
 .close:hover svg {
     stroke: #ffffff;
 }
 
-/* ===== ADD BUTTON (右側極細) ===== */
+/* ===== 右側加號 (固定在最右邊) ===== */
 .add-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 34px; 
+    height: 34px;
+    margin-right: 6px;
     cursor: pointer;
     color: #8f8f8f;
-    transition: color .2s;
+    border-radius: 4px;
+    transition: background .12s, color .12s;
 }
 
 .add-btn:hover {
+    background: #1f1f1f;
     color: #ffffff;
 }
 
 .add-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     stroke: currentColor;
-    stroke-width: 1px;
+    stroke-width: 1.2px;
 }
 
 /* ===== EDITOR ===== */
 #editor {
     width: 100%;
-    height: calc(100% - 35px);
+    height: calc(100% - 38px);
 }
 </style>
 </head>
@@ -145,7 +146,7 @@ html,body{
 <body>
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn">
+    <div class="add-btn" id="add-tab-btn" title="New Tab">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -194,12 +195,19 @@ window.editor = monaco.editor.create(
         value:'',
         language:'lua',
         theme:'dark-executor',
-        fontSize:13,
+        fontSize:14,
         minimap:{ enabled:false },
         smoothScrolling:true,
         cursorSmoothCaretAnimation:true,
         cursorBlinking:'smooth',
-        lineNumbersMinChars: 3
+        lineNumbersMinChars: 3,
+        scrollbar: {
+            vertical: 'visible',
+            horizontal: 'visible',
+            useShadows: false,
+            verticalScrollbarSize: 10,
+            horizontalScrollbarSize: 10
+        }
     }
 );
 
@@ -217,15 +225,15 @@ function renderTabs(){
         const tab=document.createElement('div');
         tab.className='tab'+(t.id===activeTab?' active':'');
 
-        // 左側文件圖示
-        const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+        // 文件圖示
+        const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
 
         tab.innerHTML = `
             ${icon}
             <div class="tab-content">
                 <span class="tab-label">${t.name}</span>
             </div>
-            <div class="close" data-id="${t.id}">
+            <div class="close">
                 <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -233,8 +241,8 @@ function renderTabs(){
             </div>
         `;
 
-        // 雙擊改名
         tab.ondblclick=e=>{
+            e.stopPropagation();
             const label = tab.querySelector('.tab-label');
             const input=document.createElement('input');
             input.className='rename';
@@ -251,16 +259,14 @@ function renderTabs(){
             input.onblur=()=>renderTabs();
         };
 
-        // 點擊切換
         tab.onclick=()=>{
             activeTab=t.id;
             save(); renderTabs(); loadTab();
         };
 
-        // 刪除邏輯
         tab.querySelector('.close').onclick=e=>{
             e.stopPropagation();
-            if(tabs.length === 1) return; // 剩一個不刪除
+            if(tabs.length === 1) return;
             tabs=tabs.filter(x=>x.id!==t.id);
             if(activeTab === t.id) activeTab=tabs[0].id;
             save(); renderTabs(); loadTab();
@@ -270,7 +276,6 @@ function renderTabs(){
     });
 }
 
-// 右側加號點擊
 document.getElementById('add-tab-btn').onclick=()=>{
     const id = 'script_' + Date.now();
     const n = tabs.length + 1;
@@ -282,6 +287,7 @@ document.getElementById('add-tab-btn').onclick=()=>{
 function loadTab(){
     const t=tabs.find(x=>x.id===activeTab);
     if(t) editor.setValue(t.code);
+    setTimeout(()=>editor.layout(), 10);
 }
 
 editor.onDidChangeModelContent(()=>{
@@ -292,7 +298,6 @@ editor.onDidChangeModelContent(()=>{
 renderTabs();
 loadTab();
 
-// API
 window.EditorAPI = {
     getCode: () => window.editor.getValue(),
     setCode: (code) => {
