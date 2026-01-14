@@ -165,7 +165,7 @@ require(['vs/editor/editor.main'], () => {
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'New Tab 1', code: '-- Feairl Hello\nprint("Hello Word")' }
+        { id: 'script_1', name: 'New Tab 1', code: '-- Feairl Hello --\nprint("Hello Word")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
