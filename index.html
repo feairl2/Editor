@@ -10,7 +10,7 @@
     html, body {
         margin: 0;
         height: 100%;
-        background: #111111;
+        background: #121212;
         font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
         overflow: hidden;
     }
@@ -21,8 +21,8 @@
         align-items: center;
         justify-content: space-between;
         height: 38px;
-        background: #0d0d0d;
-        border-bottom: 1px solid #1a1a1a;
+        background: #080808;
+        border-bottom: 1px solid #121212;
         box-sizing: border-box;
     }
 
@@ -48,7 +48,7 @@
         user-select: none;
         font-size: 13px;
         position: relative;
-        border-right: 1px solid #1a1a1a;
+        border-right: 1px solid #080808;
         box-sizing: border-box;
         transition: background 0.1s, color 0.1s;
         min-width: 130px;
@@ -58,9 +58,9 @@
 
     /* ===== 被選中的分頁 (加粗頂部線) ===== */
     .tab.active {
-        background: #0d0d0d;
+        background: #121212;
         color: #ffffff;
-        border-top: 3.5px solid #555555; 
+        border-top: 3.2px solid #555555; 
         height: 100%;
     }
 
@@ -112,7 +112,7 @@
         width: 14px; /* 從 18px 縮小至 14px */
         height: 14px;
         stroke: currentColor;
-        stroke-width: 2.2px; /* 稍微加粗線條確保清晰 */
+        stroke-width: 2.0px;
     }
 
     /* ===== 編輯器區域 ===== */
@@ -155,7 +155,7 @@ require(['vs/editor/editor.main'], () => {
             { token: 'identifier', foreground: '9cdcfe' }
         ],
         colors: {
-            'editor.background': '#0d0d0d',
+            'editor.background': '#121212',
             'editor.lineHighlightBackground': '#00000000',
             'editor.lineHighlightBorder': '#3e3e3e',
             'editorCursor.foreground': '#ffffff',
