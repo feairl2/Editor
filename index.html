@@ -2,247 +2,298 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Editor</title>
+<title>Pro Editor</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
 <style>
-html,body{
-    margin:0;
-    height:100%;
-    background:#080808;
-    font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
-    overflow:hidden;
-}
+    html, body {
+        margin: 0;
+        height: 100%;
+        background: #0d0d0d;
+        font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+        overflow: hidden;
+    }
 
-/* ===== TAB BAR ===== */
-#tabs-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 38px; 
-    background: #0d0d0d;
-    border-bottom: 1px solid #1a1a1a;
-}
+    /* ===== 分頁欄容器 ===== */
+    #tabs-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 38px;
+        background: #0d0d0d;
+        border-bottom: 1px solid #1a1a1a;
+        box-sizing: border-box;
+    }
 
-#tabs {
-    display: flex;
-    align-items: flex-end; 
-    height: 100%;
-}
+    /* ===== 分頁區域 ===== */
+    #tabs {
+        display: flex;
+        align-items: flex-end;
+        height: 100%;
+        overflow-x: auto;
+        scrollbar-width: none; /* Firefox 隱藏捲軸 */
+    }
+    #tabs::-webkit-scrollbar { display: none; } /* Chrome 隱藏捲軸 */
 
-/* ===== TAB ===== */
-.tab {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding: 0 12px;
-    background: transparent;
-    color: #858585;
-    cursor: pointer;
-    user-select: none;
-    font-size: 13px;
-    position: relative;
-    border-right: 1px solid #1a1a1a;
-    box-sizing: border-box;
-    transition: background .1s, color .1s;
-}
+    /* ===== 單個分頁 ===== */
+    .tab {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 12px;
+        background: transparent;
+        color: #858585;
+        cursor: pointer;
+        user-select: none;
+        font-size: 13px;
+        position: relative;
+        border-right: 1px solid #1a1a1a;
+        box-sizing: border-box;
+        transition: background 0.1s, color 0.1s;
+        min-width: 120px;
+    }
 
-.tab:hover {
-    background: #161616;
-    color: #ccc;
-}
+    .tab:hover {
+        background: #161616;
+        color: #ccc;
+    }
 
-.tab.active {
-    background: #0f0f0f;
-    color: #ffffff;
-    /* 加粗頂部線 */
-    border-top: 3px solid #505050; 
-}
+    /* ===== 被選中的分頁 (加粗頂部線) ===== */
+    .tab.active {
+        background: #0d0d0d;
+        color: #ffffff;
+        border-top: 3px solid #606060; /* 加粗的頂部灰色線條 */
+        height: 100%;
+    }
 
-.tab-icon {
-    width: 14px;
-    height: 14px;
-    margin-right: 8px;
-    opacity: 0.8;
-}
+    .tab-icon {
+        width: 14px;
+        height: 14px;
+        margin-right: 8px;
+        opacity: 0.8;
+    }
 
-/* ===== 叉叉圖示 (放大且清晰) ===== */
-.close {
-    width: 24px; 
-    height: 24px; 
-    margin-left: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-}
+    /* ===== 叉叉圖示 (更明顯、更好按) ===== */
+    .close {
+        width: 24px;
+        height: 24px;
+        margin-left: auto; /* 靠右對齊 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background 0.1s;
+    }
 
-.close:hover {
-    background: #333333;
-}
+    .close:hover {
+        background: #333333;
+    }
 
-.close svg {
-    width: 12px; /* 尺寸適中 */
-    height: 12px;
-    stroke: #999999;
-    stroke-width: 2.2px; /* 增加線條粗細，使其明顯 */
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
+    .close svg {
+        width: 12px;
+        height: 12px;
+        stroke: #999999;
+        stroke-width: 2.5px; /* 線條加粗 */
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
 
-.close:hover svg {
-    stroke: #ffffff;
-}
+    .close:hover svg {
+        stroke: #ffffff;
+    }
 
-/* ===== 右側加號 ===== */
-.add-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px; 
-    height: 38px;
-    cursor: pointer;
-    color: #999;
-}
+    /* ===== 右側加號按鈕 ===== */
+    .add-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        cursor: pointer;
+        color: #999;
+        transition: background 0.1s, color 0.1s;
+    }
 
-.add-btn:hover {
-    background: #1a1a1a;
-    color: #fff;
-}
+    .add-btn:hover {
+        background: #1a1a1a;
+        color: #fff;
+    }
 
-.add-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    stroke-width: 1.5px;
-}
+    .add-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 1.8px;
+    }
 
-/* ===== EDITOR ===== */
-#editor {
-    width: 100%;
-    height: calc(100% - 38px);
-}
+    /* ===== 編輯器區域 ===== */
+    #editor {
+        width: 100%;
+        height: calc(100% - 38px);
+    }
+
+    /* 隱藏 Monaco 預設的行高亮背景，確保只有邊框 */
+    .monaco-editor .line-highlight {
+        background-color: transparent !important;
+    }
 </style>
 </head>
 
 <body>
+
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn">
+    <div class="add-btn" id="add-tab-btn" title="New Tab">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </div>
 </div>
+
 <div id="editor"></div>
 
 <script>
 require.config({
-    paths:{ vs:'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }
+    paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }
 });
 
 require(['vs/editor/editor.main'], () => {
 
-/* ===== THEME & HOLLOW HIGHLIGHT ===== */
-monaco.editor.defineTheme('dark-executor', {
-    base:'vs-dark',
-    inherit:true,
-    rules:[
-        {token:'keyword',foreground:'c586c0'},
-        {token:'number',foreground:'b5cea8'},
-        {token:'string',foreground:'ce9178'},
-        {token:'comment',foreground:'6a9955'},
-        {token:'identifier',foreground:'9cdcfe'}
-    ],
-    colors:{
-        'editor.background':'#0d0d0d',
-        // 空心高亮的關鍵：背景設為透明，給予邊框顏色
-        'editor.lineHighlightBackground':'#00000000', 
-        'editor.lineHighlightBorder':'#3a3a3a', 
-        'editorCursor.foreground':'#ffffff',
-        'editor.selectionBackground':'#2a2a2a'
-    }
-});
-
-/* ===== DATA & INIT ===== */
-window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [{
-    id:'script_1', name:'New Tab 1', code:'-- Hollow highlight active\nprint("Hello World")'
-}];
-window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
-
-window.editor = monaco.editor.create(document.getElementById('editor'), {
-    value:'',
-    language:'lua',
-    theme:'dark-executor',
-    fontSize:14,
-    minimap:{ enabled:false },
-    smoothScrolling:true,
-    cursorSmoothCaretAnimation:true,
-    cursorBlinking:'smooth',
-    renderLineHighlight: 'all', // 確保高亮應用到整行
-    lineNumbersMinChars: 3
-});
-
-const tabsDiv = document.getElementById('tabs');
-
-function save(){
-    localStorage.setItem('lua_tabs',JSON.stringify(tabs));
-    localStorage.setItem('lua_active',activeTab);
-}
-
-function renderTabs(){
-    tabsDiv.innerHTML='';
-    tabs.forEach(t=>{
-        const tab=document.createElement('div');
-        tab.className='tab'+(t.id===activeTab?' active':'');
-        const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
-        
-        tab.innerHTML = `
-            ${icon}
-            <span class="tab-label">${t.name}</span>
-            <div class="close">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-            </div>
-        `;
-
-        tab.onclick=()=>{ activeTab=t.id; save(); renderTabs(); loadTab(); };
-        
-        tab.querySelector('.close').onclick=e=>{
-            e.stopPropagation();
-            if(tabs.length === 1) return;
-            tabs=tabs.filter(x=>x.id!==t.id);
-            if(activeTab === t.id) activeTab=tabs[0].id;
-            save(); renderTabs(); loadTab();
-        };
-
-        tabsDiv.appendChild(tab);
+    /* ===== 主題定義: 實現空心行高亮 ===== */
+    monaco.editor.defineTheme('custom-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            { token: 'keyword', foreground: 'c586c0' },
+            { token: 'number', foreground: 'b5cea8' },
+            { token: 'string', foreground: 'ce9178' },
+            { token: 'comment', foreground: '6a9955' },
+            { token: 'identifier', foreground: '9cdcfe' }
+        ],
+        colors: {
+            'editor.background': '#0d0d0d',
+            'editor.lineHighlightBackground': '#00000000', // 透明背景
+            'editor.lineHighlightBorder': '#444444',      // 明確的空心框邊框
+            'editorCursor.foreground': '#ffffff',
+            'editor.selectionBackground': '#2a2a2a',
+            'editorLineNumber.foreground': '#454545',
+            'editorLineNumber.activeForeground': '#aaaaaa'
+        }
     });
-}
 
-document.getElementById('add-tab-btn').onclick=()=>{
-    const id = 'script_' + Date.now();
-    tabs.push({ id, name: 'New Tab ' + (tabs.length + 1), code: '' });
-    activeTab = id;
-    save(); renderTabs(); loadTab();
-};
+    /* ===== 初始化數據 ===== */
+    window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
+        { id: 'script_1', name: 'New Tab 1', code: '-- Hollow Highlight Active\nprint("Hello World")' }
+    ];
+    window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
-function loadTab(){
-    const t=tabs.find(x=>x.id===activeTab);
-    if(t) editor.setValue(t.code);
-}
+    /* ===== 創建編輯器 ===== */
+    window.editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '',
+        language: 'lua',
+        theme: 'custom-dark',
+        fontSize: 14,
+        minimap: { enabled: false },
+        renderLineHighlight: 'line', // 關鍵：只高亮代碼行，不包含行號
+        renderLineHighlightOnlyWhenFocus: true,
+        automaticLayout: true,
+        fontFamily: "'Cascadia Code', 'Consolas', monospace",
+        lineNumbersMinChars: 3,
+        scrollbar: {
+            vertical: 'visible',
+            horizontal: 'visible',
+            verticalScrollbarSize: 10,
+            horizontalScrollbarSize: 10
+        }
+    });
 
-editor.onDidChangeModelContent(()=>{
-    const t=tabs.find(x=>x.id===activeTab);
-    if(t){ t.code=editor.getValue(); save(); }
-});
+    const tabsDiv = document.getElementById('tabs');
 
-renderTabs();
-loadTab();
+    function save() {
+        localStorage.setItem('lua_tabs', JSON.stringify(tabs));
+        localStorage.setItem('lua_active', activeTab);
+    }
 
+    /* ===== 渲染分頁 ===== */
+    function renderTabs() {
+        tabsDiv.innerHTML = '';
+        tabs.forEach(t => {
+            const tab = document.createElement('div');
+            tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
+            
+            // 使用類 VS Code 的文件圖示
+            const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+            
+            tab.innerHTML = `
+                ${icon}
+                <span class="tab-label">${t.name}</span>
+                <div class="close">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </div>
+            `;
+
+            tab.onclick = () => {
+                activeTab = t.id;
+                save();
+                renderTabs();
+                loadTab();
+            };
+
+            // 關閉按鈕事件
+            tab.querySelector('.close').onclick = (e) => {
+                e.stopPropagation();
+                if (tabs.length === 1) return;
+                const index = tabs.findIndex(x => x.id === t.id);
+                tabs = tabs.filter(x => x.id !== t.id);
+                if (activeTab === t.id) {
+                    activeTab = tabs[Math.max(0, index - 1)].id;
+                }
+                save();
+                renderTabs();
+                loadTab();
+            };
+
+            tabsDiv.appendChild(tab);
+        });
+    }
+
+    /* ===== 添加分頁 ===== */
+    document.getElementById('add-tab-btn').onclick = () => {
+        const id = 'script_' + Date.now();
+        tabs.push({ id, name: 'New Tab ' + (tabs.length + 1), code: '' });
+        activeTab = id;
+        save();
+        renderTabs();
+        loadTab();
+    };
+
+    function loadTab() {
+        const t = tabs.find(x => x.id === activeTab);
+        if (t) editor.setValue(t.code);
+    }
+
+    editor.onDidChangeModelContent(() => {
+        const t = tabs.find(x => x.id === activeTab);
+        if (t) {
+            t.code = editor.getValue();
+            save();
+        }
+    });
+
+    // 初始渲染
+    renderTabs();
+    loadTab();
+
+    // API 暴露給外部 (WinForms/WPF)
+    window.EditorAPI = {
+        getCode: () => editor.getValue(),
+        setCode: (code) => editor.setValue(code || "")
+    };
 });
 </script>
+
 </body>
 </html>
