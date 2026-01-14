@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Pro Editor - Rounded Tabs</title>
+<title>Modern Pro Editor</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
@@ -10,8 +10,8 @@
     html, body {
         margin: 0;
         height: 100%;
-        background: #101010; /* 全域底色 */
-        font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+        background: #101010;
+        font-family: "Inter", "Segoe UI", "Microsoft JhengHei", sans-serif;
         overflow: hidden;
     }
 
@@ -19,80 +19,62 @@
     #tabs-container {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        height: 45px; /* 稍微加高，讓圓角更有空間 */
+        height: 50px; /* 增加高度讓分頁有呼吸空間 */
         background: #101010; 
-        padding: 0 10px;
+        padding: 0 12px;
         box-sizing: border-box;
-        border-bottom: 1px solid #252525; /* 區隔分頁與編輯器的細線 */
     }
 
     /* ===== 分頁區域 ===== */
     #tabs {
         display: flex;
-        align-items: flex-end; /* 分頁靠下對齊 */
+        align-items: center; /* 置中對齊，產生浮動感 */
         height: 100%;
         overflow-x: auto;
-        gap: 6px; /* 分頁之間的間距 */
+        gap: 8px; /* 分頁間距加大 */
         scrollbar-width: none;
     }
     #tabs::-webkit-scrollbar { display: none; }
 
-    /* ===== 單個分頁樣式 ===== */
+    /* ===== 現代化全圓角分頁 ===== */
     .tab {
         display: flex;
         align-items: center;
-        height: 34px;
-        padding: 0 16px;
-        background: #1a1a1a; /* 未選中時稍深，增加實體感 */
-        color: #777;
+        height: 32px;
+        padding: 0 14px;
+        background: rgba(255, 255, 255, 0.03); /* 極淡的透明白 */
+        color: #707070;
         cursor: pointer;
         user-select: none;
         font-size: 13px;
-        position: relative;
-        border-radius: 10px 10px 0 0; /* 明顯的圓角 */
-        border: 1px solid #333;
-        border-bottom: none;
-        transition: all 0.2s ease;
-        min-width: 130px;
+        border-radius: 8px; /* 四角圓角 */
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 120px;
         box-sizing: border-box;
     }
 
+    /* 滑鼠懸停 */
     .tab:hover {
-        background: #252525;
+        background: rgba(255, 255, 255, 0.08);
         color: #aaa;
     }
 
-    /* ===== 被選中的分頁 (Active) ===== */
+    /* 選中狀態：更亮、更白、更有存在感 */
     .tab.active {
-        background: #101010; /* 與編輯器背景完全融合 */
+        background: rgba(255, 255, 255, 0.12);
         color: #ffffff;
-        height: 38px; /* 稍微升高一點點 */
-        border-color: #444;
-        border-bottom: 2px solid #101010; /* 遮蓋下方的 border-bottom */
-        margin-bottom: -1px; /* 向下偏移銜接 */
-        z-index: 5;
-        font-weight: 600;
-    }
-
-    /* 選中時的頂部藍色高亮線 (讓分頁更明顯) */
-    .tab.active::before {
-        content: "";
-        position: absolute;
-        top: -1px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #007acc;
-        border-radius: 10px 10px 0 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* 增加一點陰影層次 */
     }
 
     .tab-icon {
         width: 14px;
         height: 14px;
         margin-right: 8px;
-        opacity: 0.8;
+        opacity: 0.6;
     }
+    .active .tab-icon { opacity: 1; }
 
     .tab-label {
         flex: 1;
@@ -101,11 +83,11 @@
         text-overflow: ellipsis;
     }
 
-    /* ===== 叉叉按鈕 ===== */
+    /* ===== 圓形叉叉按鈕 ===== */
     .close {
         width: 18px;
         height: 18px;
-        margin-left: 8px;
+        margin-left: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -114,49 +96,53 @@
     }
 
     .close:hover {
-        background: #333;
+        background: rgba(255, 255, 255, 0.15);
     }
 
     .close svg {
         width: 8px;
         height: 8px;
-        stroke: #888;
+        stroke: currentColor;
         stroke-width: 3px;
     }
 
-    .close:hover svg {
-        stroke: #fff;
-    }
-
-    /* ===== 加號按鈕 ===== */
+    /* ===== 右側加號按鈕 ===== */
     .add-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        margin-left: 10px;
+        border-radius: 50%; /* 圓形加號 */
+        background: rgba(255, 255, 255, 0.03);
         color: #666;
+        cursor: pointer;
         transition: all 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .add-btn:hover {
-        background: #222;
+        background: rgba(255, 255, 255, 0.1);
         color: #fff;
+        transform: scale(1.05);
     }
 
     .add-btn svg {
         width: 16px;
         height: 16px;
         stroke: currentColor;
-        stroke-width: 2.5px;
+        stroke-width: 2px;
     }
 
     /* ===== 編輯器區域 ===== */
     #editor {
-        width: 100%;
-        height: calc(100% - 45px);
+        width: calc(100% - 16px);
+        height: calc(100% - 58px);
+        margin: 0 8px 8px 8px; /* 編輯器四周也留一點空隙，更有質感 */
+        border-radius: 12px; /* 編輯器本體也可以帶圓角 */
+        overflow: hidden;
+        border: 1px solid #222;
     }
 </style>
 </head>
@@ -193,8 +179,7 @@ require(['vs/editor/editor.main'], () => {
         ],
         colors: {
             'editor.background': '#101010',
-            'editor.lineHighlightBackground': '#00000000',
-            'editor.lineHighlightBorder': '#333333',
+            'editor.lineHighlightBackground': '#1A1A1A',
             'editorCursor.foreground': '#ffffff',
             'editor.selectionBackground': '#2a2a2a',
             'editorLineNumber.foreground': '#454545',
@@ -202,13 +187,11 @@ require(['vs/editor/editor.main'], () => {
         }
     });
 
-    // 初始化分頁數據
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'Main.lua', code: '-- Welcome to Pro Editor\nprint("Hello World")' }
+        { id: 'script_1', name: 'Main.lua', code: '-- Modern Editor Initialized\nprint("Hello UI")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
-    // 建立編輯器實例
     window.editor = monaco.editor.create(document.getElementById('editor'), {
         value: '',
         language: 'lua',
@@ -220,6 +203,7 @@ require(['vs/editor/editor.main'], () => {
         cursorSmoothCaretAnimation: "on",
         cursorBlinking: "smooth",
         smoothScrolling: true,
+        padding: { top: 10 }
     });
 
     const tabsDiv = document.getElementById('tabs');
@@ -235,7 +219,6 @@ require(['vs/editor/editor.main'], () => {
             const tab = document.createElement('div');
             tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
             
-            // 使用 SVG 圖示
             const iconSvg = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
             
             tab.innerHTML = `
@@ -274,7 +257,7 @@ require(['vs/editor/editor.main'], () => {
 
     document.getElementById('add-tab-btn').onclick = () => {
         const id = 'script_' + Date.now();
-        tabs.push({ id, name: 'Untitled ' + (tabs.length + 1) + '.lua', code: '' });
+        tabs.push({ id, name: 'Script ' + (tabs.length + 1) + '.lua', code: '' });
         activeTab = id;
         save();
         renderTabs();
@@ -300,7 +283,6 @@ require(['vs/editor/editor.main'], () => {
     renderTabs();
     loadTab();
     editor.focus();
-
 });
 </script>
 </body>
