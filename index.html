@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Modern Pro Editor</title>
+<title>Modern Pro Editor - Large Close</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
@@ -11,7 +11,7 @@
         margin: 0;
         height: 100%;
         background: #101010;
-        font-family: "Inter", "Segoe UI", "Microsoft JhengHei", sans-serif;
+        font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
         overflow: hidden;
     }
 
@@ -19,19 +19,19 @@
     #tabs-container {
         display: flex;
         align-items: center;
-        height: 50px; /* 增加高度讓分頁有呼吸空間 */
+        height: 54px; /* 稍微增加高度，讓大按鈕不顯得擁擠 */
         background: #101010; 
-        padding: 0 12px;
+        padding: 0 16px;
         box-sizing: border-box;
     }
 
     /* ===== 分頁區域 ===== */
     #tabs {
         display: flex;
-        align-items: center; /* 置中對齊，產生浮動感 */
+        align-items: center;
         height: 100%;
         overflow-x: auto;
-        gap: 8px; /* 分頁間距加大 */
+        gap: 10px;
         scrollbar-width: none;
     }
     #tabs::-webkit-scrollbar { display: none; }
@@ -40,38 +40,36 @@
     .tab {
         display: flex;
         align-items: center;
-        height: 32px;
-        padding: 0 14px;
-        background: rgba(255, 255, 255, 0.03); /* 極淡的透明白 */
-        color: #707070;
+        height: 36px;
+        padding: 0 10px 0 14px; /* 右邊縮短一點，因為叉叉按鈕自帶 Padding */
+        background: rgba(255, 255, 255, 0.04);
+        color: #808080;
         cursor: pointer;
         user-select: none;
         font-size: 13px;
-        border-radius: 8px; /* 四角圓角 */
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 10px; /* 全圓角 */
+        border: 1px solid rgba(255, 255, 255, 0.06);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        min-width: 120px;
+        min-width: 140px;
         box-sizing: border-box;
     }
 
-    /* 滑鼠懸停 */
     .tab:hover {
         background: rgba(255, 255, 255, 0.08);
-        color: #aaa;
+        color: #bbb;
     }
 
-    /* 選中狀態：更亮、更白、更有存在感 */
     .tab.active {
         background: rgba(255, 255, 255, 0.12);
         color: #ffffff;
         border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* 增加一點陰影層次 */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     }
 
     .tab-icon {
-        width: 14px;
-        height: 14px;
-        margin-right: 8px;
+        width: 15px;
+        height: 15px;
+        margin-right: 10px;
         opacity: 0.6;
     }
     .active .tab-icon { opacity: 1; }
@@ -81,18 +79,19 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: 500;
     }
 
-    /* ===== 圓形叉叉按鈕 ===== */
+    /* ===== 放大後的關閉按鈕 ===== */
     .close {
-        width: 18px;
-        height: 18px;
+        width: 24px;  /* 寬度增加 */
+        height: 24px; /* 高度增加 */
         margin-left: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        transition: background 0.2s;
+        border-radius: 6px; /* 稍微方圓，更有現代感 */
+        transition: all 0.2s;
     }
 
     .close:hover {
@@ -100,49 +99,55 @@
     }
 
     .close svg {
-        width: 8px;
-        height: 8px;
+        width: 11px; /* 圖示本身也調大 */
+        height: 11px;
         stroke: currentColor;
-        stroke-width: 3px;
+        stroke-width: 2.5px; /* 線條稍微加粗一點 */
     }
 
-    /* ===== 右側加號按鈕 ===== */
+    /* 點擊叉叉時變紅（可選）*/
+    .close:active {
+        background: #e81123;
+        color: white;
+    }
+
+    /* ===== 右側圓形加號按鈕 ===== */
     .add-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        margin-left: 10px;
-        border-radius: 50%; /* 圓形加號 */
-        background: rgba(255, 255, 255, 0.03);
-        color: #666;
+        width: 36px;
+        height: 36px;
+        margin-left: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+        color: #888;
         cursor: pointer;
         transition: all 0.2s;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .add-btn:hover {
         background: rgba(255, 255, 255, 0.1);
         color: #fff;
-        transform: scale(1.05);
+        transform: scale(1.1);
     }
 
     .add-btn svg {
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         stroke: currentColor;
-        stroke-width: 2px;
+        stroke-width: 2.2px;
     }
 
     /* ===== 編輯器區域 ===== */
     #editor {
-        width: calc(100% - 16px);
-        height: calc(100% - 58px);
-        margin: 0 8px 8px 8px; /* 編輯器四周也留一點空隙，更有質感 */
-        border-radius: 12px; /* 編輯器本體也可以帶圓角 */
+        width: calc(100% - 24px);
+        height: calc(100% - 66px); /* 扣除 Tab 欄與邊距 */
+        margin: 0 12px 12px 12px;
+        border-radius: 12px;
         overflow: hidden;
-        border: 1px solid #222;
+        border: 1px solid #252525;
     }
 </style>
 </head>
@@ -188,7 +193,7 @@ require(['vs/editor/editor.main'], () => {
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'Main.lua', code: '-- Modern Editor Initialized\nprint("Hello UI")' }
+        { id: 'script_1', name: 'Main.lua', code: '-- Modern UI Ready\nprint("Hello World")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
@@ -203,7 +208,7 @@ require(['vs/editor/editor.main'], () => {
         cursorSmoothCaretAnimation: "on",
         cursorBlinking: "smooth",
         smoothScrolling: true,
-        padding: { top: 10 }
+        padding: { top: 12 }
     });
 
     const tabsDiv = document.getElementById('tabs');
@@ -224,7 +229,7 @@ require(['vs/editor/editor.main'], () => {
             tab.innerHTML = `
                 ${iconSvg}
                 <span class="tab-label">${t.name}</span>
-                <div class="close">
+                <div class="close" title="Close Tab">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -257,7 +262,7 @@ require(['vs/editor/editor.main'], () => {
 
     document.getElementById('add-tab-btn').onclick = () => {
         const id = 'script_' + Date.now();
-        tabs.push({ id, name: 'Script ' + (tabs.length + 1) + '.lua', code: '' });
+        tabs.push({ id, name: 'Untitled.lua', code: '' });
         activeTab = id;
         save();
         renderTabs();
