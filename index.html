@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Pro Editor - Final Version</title>
+<title>Pro Editor - Refined UI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
@@ -54,16 +54,13 @@
         min-width: 130px;
     }
 
-    .tab:hover {
-        background: #161616;
-        color: #ccc;
-    }
+    .tab:hover { background: #161616; color: #ccc; }
 
     /* ===== 被選中的分頁 (加粗頂部線) ===== */
     .tab.active {
         background: #0d0d0d;
         color: #ffffff;
-        border-top: 3.5px solid #555555; /* 加粗的頂部線條 */
+        border-top: 3.5px solid #555555; 
         height: 100%;
     }
 
@@ -74,7 +71,7 @@
         opacity: 0.8;
     }
 
-    /* ===== 叉叉圖示 (視覺清晰、熱區大) ===== */
+    /* ===== 叉叉圖示 (比例微調) ===== */
     .close {
         width: 24px;
         height: 24px;
@@ -83,27 +80,22 @@
         align-items: center;
         justify-content: center;
         border-radius: 4px;
-        transition: background 0.1s;
     }
 
-    .close:hover {
-        background: #333333;
-    }
+    .close:hover { background: #333333; }
 
     .close svg {
         width: 11px;
         height: 11px;
         stroke: #999999;
-        stroke-width: 2.5px; /* 明顯的叉叉線條 */
+        stroke-width: 2.5px;
         stroke-linecap: round;
         stroke-linejoin: round;
     }
 
-    .close:hover svg {
-        stroke: #ffffff;
-    }
+    .close:hover svg { stroke: #ffffff; }
 
-    /* ===== 右側加號按鈕 ===== */
+    /* ===== 右側加號按鈕 (圖示縮小) ===== */
     .add-btn {
         display: flex;
         align-items: center;
@@ -112,19 +104,15 @@
         height: 38px;
         cursor: pointer;
         color: #999;
-        transition: background 0.1s, color 0.1s;
     }
 
-    .add-btn:hover {
-        background: #1a1a1a;
-        color: #fff;
-    }
+    .add-btn:hover { background: #1a1a1a; color: #fff; }
 
     .add-btn svg {
-        width: 18px;
-        height: 18px;
+        width: 14px; /* 從 18px 縮小至 14px */
+        height: 14px;
         stroke: currentColor;
-        stroke-width: 2px;
+        stroke-width: 2.2px; /* 稍微加粗線條確保清晰 */
     }
 
     /* ===== 編輯器區域 ===== */
@@ -139,7 +127,7 @@
 
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn">
+    <div class="add-btn" id="add-tab-btn" title="New Tab">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -155,7 +143,7 @@ require.config({
 
 require(['vs/editor/editor.main'], () => {
 
-    /* ===== 定義自定義主題: 空心高亮線條 ===== */
+    /* ===== 定義自定義主題 ===== */
     monaco.editor.defineTheme('custom-dark', {
         base: 'vs-dark',
         inherit: true,
@@ -168,8 +156,8 @@ require(['vs/editor/editor.main'], () => {
         ],
         colors: {
             'editor.background': '#0d0d0d',
-            'editor.lineHighlightBackground': '#00000000', // 背景完全透明
-            'editor.lineHighlightBorder': '#3e3e3e',      // 空心框的邊框顏色
+            'editor.lineHighlightBackground': '#00000000',
+            'editor.lineHighlightBorder': '#3e3e3e',
             'editorCursor.foreground': '#ffffff',
             'editor.selectionBackground': '#2a2a2a',
             'editorLineNumber.foreground': '#454545',
@@ -179,30 +167,26 @@ require(['vs/editor/editor.main'], () => {
 
     /* ===== 初始化資料 ===== */
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'New Tab 1', code: '-- Welcome\nprint("Smooth Cursor & Hollow Highlight Active")' }
+        { id: 'script_1', name: 'New Tab 1', code: '-- Editor Ready\nprint("Focused & Smaller Add Icon")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
-    /* ===== 創建編輯器 (配置動畫) ===== */
+    /* ===== 創建編輯器 ===== */
     window.editor = monaco.editor.create(document.getElementById('editor'), {
         value: '',
         language: 'lua',
         theme: 'custom-dark',
         fontSize: 14,
         minimap: { enabled: false },
-        renderLineHighlight: 'line', // 關鍵：只在代碼區顯示高亮，不包含行號
+        renderLineHighlight: 'line',
         renderLineHighlightOnlyWhenFocus: true,
         automaticLayout: true,
         fontFamily: "'Cascadia Code', 'Consolas', monospace",
         lineNumbersMinChars: 3,
-
-        // --- 游標動畫設定 ---
-        cursorSmoothCaretAnimation: "on", // 啟用平滑移動
-        cursorBlinking: "smooth",         // 絲滑閃爍
+        cursorSmoothCaretAnimation: "on",
+        cursorBlinking: "smooth",
         cursorStyle: "line",
-        smoothScrolling: true,            // 捲動動畫
-        // ------------------
-
+        smoothScrolling: true,
         scrollbar: {
             vertical: 'visible',
             horizontal: 'visible',
@@ -218,7 +202,6 @@ require(['vs/editor/editor.main'], () => {
         localStorage.setItem('lua_active', activeTab);
     }
 
-    /* ===== 渲染分頁 ===== */
     function renderTabs() {
         tabsDiv.innerHTML = '';
         tabs.forEach(t => {
@@ -261,7 +244,6 @@ require(['vs/editor/editor.main'], () => {
         });
     }
 
-    /* ===== 添加分頁 ===== */
     document.getElementById('add-tab-btn').onclick = () => {
         const id = 'script_' + Date.now();
         tabs.push({ id, name: 'New Tab ' + (tabs.length + 1), code: '' });
@@ -273,7 +255,10 @@ require(['vs/editor/editor.main'], () => {
 
     function loadTab() {
         const t = tabs.find(x => x.id === activeTab);
-        if (t) editor.setValue(t.code);
+        if (t) {
+            editor.setValue(t.code);
+            editor.focus(); 
+        }
     }
 
     editor.onDidChangeModelContent(() => {
@@ -286,14 +271,16 @@ require(['vs/editor/editor.main'], () => {
 
     renderTabs();
     loadTab();
+    editor.focus();
 
-    // 提供給外部調用的介面
     window.EditorAPI = {
         getCode: () => editor.getValue(),
-        setCode: (code) => editor.setValue(code || "")
+        setCode: (code) => {
+            editor.setValue(code || "");
+            editor.focus();
+        }
     };
 });
 </script>
-
 </body>
 </html>
