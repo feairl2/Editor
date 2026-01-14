@@ -10,7 +10,7 @@
     html, body {
         margin: 0;
         height: 100%;
-        background: #121212; /* 編輯區主色 */
+        background: #101010; /* 編輯區主色 */
         font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
         overflow: hidden;
     }
@@ -53,11 +53,11 @@
         min-width: 125px;
     }
 
-    .tab:hover { background: #121212; color: #aaa; }
+    .tab:hover { background: #101010; color: #aaa; }
 
     /* ===== 被選中的分頁 (與編輯區同色且無邊框) ===== */
     .tab.active {
-        background: #121212; /* 與編輯區顏色相同 */
+        background: #101010; /* 與編輯區顏色相同 */
         color: #ffffff;
         border-top: 2px solid #555555; /* 頂部線調細至 2px */
         border-right: none; /* 移除右邊框 */
@@ -106,7 +106,7 @@
         color: #777;
     }
 
-    .add-btn:hover { background: #121212; color: #fff; }
+    .add-btn:hover { background: #101010; color: #fff; }
 
     .add-btn svg {
         width: 13px;
@@ -154,7 +154,7 @@ require(['vs/editor/editor.main'], () => {
             { token: 'identifier', foreground: '9cdcfe' }
         ],
         colors: {
-            'editor.background': '#121212', // 編輯區底色改為 121212
+            'editor.background': '#101010', // 編輯區底色改為 101010
             'editor.lineHighlightBackground': '#00000000',
             'editor.lineHighlightBorder': '#333333',
             'editorCursor.foreground': '#ffffff',
@@ -165,7 +165,7 @@ require(['vs/editor/editor.main'], () => {
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'New Tab 1', code: '-- Theme Updated\nprint("Colors: 121212 & 080808")' }
+        { id: 'script_1', name: 'New Tab 1', code: '-- Theme Updated\nprint("Colors: 101010 & 080808")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
