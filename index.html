@@ -2,16 +2,17 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Pro Editor - Custom Theme</title>
+<title>Pro Editor - Modern UI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
 <style>
+/* 基礎設定 */
 html, body {
     margin: 0;
     height: 100%;
-    background: #101010;
-    font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+    background: #0d0d0d; /* 更深邃的背景 */
+    font-family: "Inter", "Segoe UI", "Microsoft JhengHei", sans-serif;
     overflow: hidden;
 }
 
@@ -19,69 +20,101 @@ html, body {
 #tabs-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: 38px;
-    background: #101010;
+    height: 44px; /* 稍微加高，給圓角更多空間 */
+    background: #141414;
+    padding: 0 10px;
+    border-bottom: 1px solid #252525;
 }
 
-/* ===== 分頁區 ===== */
+/* ===== 分頁捲動區 ===== */
 #tabs {
     display: flex;
+    gap: 6px; /* Tab 之間的間距 */
     height: 100%;
+    align-items: center;
     overflow-x: auto;
     scrollbar-width: none;
 }
 #tabs::-webkit-scrollbar { display: none; }
 
-/* ===== Tab ===== */
+/* ===== 現代化 Tab 設計 ===== */
 .tab {
     display: flex;
     align-items: center;
-    padding: 0 14px;
-    color: #707070;
-    font-size: 12.5px;
+    height: 32px; /* 固定高度以實現藥丸狀圓角 */
+    padding: 0 12px;
+    color: #999;
+    font-size: 13px;
     cursor: pointer;
-    border-right: 1px solid #1a1a1a;
-}
-.tab.active {
-    color: #fff;
-    border-top: 2px solid #555;
-    border-right: none;
+    background: #1e1e1e;
+    border-radius: 8px; /* 圓角關鍵 */
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    user-select: none;
 }
 
+/* 懸停效果 */
+.tab:hover {
+    background: #2a2a2a;
+    color: #ccc;
+}
+
+/* 激活狀態 */
+.tab.active {
+    color: #ffffff;
+    background: #333333;
+    border: 1px solid #444;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 圖標顏色 */
 .tab-icon {
     width: 14px;
     height: 14px;
     margin-right: 8px;
-    opacity: .7;
+    color: #519aba; /* Lua 藍色調 */
 }
 
+/* 關閉按鈕圓角化 */
 .close {
-    margin-left: auto;
-    width: 22px;
-    height: 22px;
+    margin-left: 8px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%;
+    font-size: 10px;
+    transition: background 0.2s;
 }
-.close:hover { background: #2a2a2a; }
+.close:hover { 
+    background: #ff5f56; 
+    color: white; 
+}
 
-/* ===== 新增按鈕 ===== */
+/* ===== 新增按鈕優化 ===== */
 .add-btn {
-    width: 38px;
-    height: 38px;
+    margin-left: 10px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #777;
+    color: #888;
+    border-radius: 6px;
+    transition: background 0.2s;
 }
-.add-btn:hover { color: #fff; }
+.add-btn:hover { 
+    background: #2a2a2a;
+    color: #fff; 
+}
 
 /* ===== 編輯器 ===== */
 #editor {
     width: 100%;
-    height: calc(100% - 38px);
+    height: calc(100% - 45px);
 }
 </style>
 </head>
@@ -90,9 +123,10 @@ html, body {
 
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn">
-        <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <div class="add-btn" id="add-tab-btn" title="Add New Tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
     </div>
 </div>
@@ -110,24 +144,26 @@ require(['vs/editor/editor.main'], () => {
         base: 'vs-dark',
         inherit: true,
         colors: {
-            'editor.background': '#101010',
+            'editor.background': '#0d0d0d',
+            'editor.lineHighlightBackground': '#1a1a1a',
             'editorCursor.foreground': '#ffffff'
         }
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'New Tab 1', code: '-- Feairl Hello --\nprint("Hello World")' }
+        { id: 'script_1', name: 'main.lua', code: '-- Welcome to Pro Editor\nprint("Hello World")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
     window.editor = monaco.editor.create(document.getElementById('editor'), {
         language: 'lua',
         theme: 'custom-dark',
-        fontSize: 14,
+        fontSize: 15,
+        fontFamily: "'Fira Code', 'Consolas', monospace",
         minimap: { enabled: false },
         automaticLayout: true,
-        cursorBlinking: 'smooth',
-        cursorStyle: 'line'
+        cursorBlinking: 'expand',
+        padding: { top: 10 }
     });
 
     const tabsDiv = document.getElementById('tabs');
@@ -137,25 +173,15 @@ require(['vs/editor/editor.main'], () => {
         localStorage.setItem('lua_active', activeTab);
     }
 
-    function moveCursorToEnd() {
-        const model = editor.getModel();
-        if (!model) return;
-        const lastLine = model.getLineCount();
-        const lastCol = model.getLineMaxColumn(lastLine);
-
-        editor.setPosition({ lineNumber: lastLine, column: lastCol });
-        editor.revealPositionInCenter({ lineNumber: lastLine, column: lastCol });
-        editor.focus();
-    }
-
     function renderTabs() {
         tabsDiv.innerHTML = '';
         tabs.forEach(t => {
             const tab = document.createElement('div');
             tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
             tab.innerHTML = `
-                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
                 </svg>
                 <span>${t.name}</span>
                 <div class="close">✕</div>
@@ -171,8 +197,11 @@ require(['vs/editor/editor.main'], () => {
             tab.querySelector('.close').onclick = e => {
                 e.stopPropagation();
                 if (tabs.length === 1) return;
+                const index = tabs.findIndex(x => x.id === t.id);
                 tabs = tabs.filter(x => x.id !== t.id);
-                activeTab = tabs[0].id;
+                if (activeTab === t.id) {
+                    activeTab = tabs[Math.max(0, index - 1)].id;
+                }
                 save();
                 renderTabs();
                 loadTab();
@@ -185,17 +214,21 @@ require(['vs/editor/editor.main'], () => {
     function loadTab() {
         const t = tabs.find(x => x.id === activeTab);
         if (!t) return;
-        editor.setValue(t.code);
-        setTimeout(moveCursorToEnd, 0);
+        // 只有在內容不同時才更新，避免輸入時閃爍
+        if (editor.getValue() !== t.code) {
+            editor.setValue(t.code);
+        }
     }
 
     document.getElementById('add-tab-btn').onclick = () => {
         const id = 'script_' + Date.now();
-        tabs.push({ id, name: 'New Tab', code: '' });
+        const newCount = tabs.length + 1;
+        tabs.push({ id, name: `script_${newCount}.lua`, code: '' });
         activeTab = id;
         save();
         renderTabs();
         loadTab();
+        editor.focus();
     };
 
     editor.onDidChangeModelContent(() => {
@@ -204,15 +237,6 @@ require(['vs/editor/editor.main'], () => {
             t.code = editor.getValue();
             save();
         }
-        moveCursorToEnd();
-    });
-
-    editor.onDidBlurEditorText(() => {
-        setTimeout(moveCursorToEnd, 0);
-    });
-
-    editor.onMouseDown(() => {
-        setTimeout(moveCursorToEnd, 0);
     });
 
     renderTabs();
