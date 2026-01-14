@@ -7,119 +7,125 @@
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
 <style>
-    html, body {
-        margin: 0;
-        height: 100%;
-        background: #101010; /* 編輯區主色 */
-        font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
-        overflow: hidden;
-    }
+html, body {
+    margin: 0;
+    height: 100%;
+    background: #101010;
+    font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+    overflow: hidden;
+}
 
-    /* ===== 分頁欄容器 ===== */
-    #tabs-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 38px;
-        background: #101010; /* Tab 列背景色 */
-        box-sizing: border-box;
-    }
+/* ===== Tab Bar ===== */
+#tabs-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 38px;
+    background: #101010;
+    padding-left: 6px;
+    box-sizing: border-box;
+}
 
-    /* ===== 分頁區域 ===== */
-    #tabs {
-        display: flex;
-        align-items: flex-end;
-        height: 100%;
-        overflow-x: auto;
-        scrollbar-width: none;
-    }
-    #tabs::-webkit-scrollbar { display: none; }
+/* ===== Tabs ===== */
+#tabs {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    gap: 2px;
+}
 
-    /* ===== 單個分頁 ===== */
-    .tab {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding: 0 14px;
-        background: transparent;
-        color: #707070;
-        cursor: pointer;
-        user-select: none;
-        font-size: 12.5px;
-        position: relative;
-        border-right: 1px solid #1a1a1a; /* 未選中時的分隔線 */
-        box-sizing: border-box;
-        transition: background 0.1s, color 0.1s;
-        min-width: 125px;
-    }
+/* ===== Tab (default) ===== */
+.tab {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 14px;
+    font-size: 12.5px;
+    color: #7a7a7a;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    border-radius: 8px 8px 0 0;
+    transition: 
+        background .15s ease,
+        color .15s ease,
+        box-shadow .15s ease;
+}
 
-    .tab:hover { background: #101010; color: #aaa; }
+.tab:hover {
+    background: #161616;
+    color: #b0b0b0;
+}
 
-    /* ===== 被選中的分頁 (與編輯區同色且無邊框) ===== */
-    .tab.active {
-        background: #101010; /* 與編輯區顏色相同 */
-        color: #ffffff;
-        border-top: 2px solid #555555; /* 頂部線調細至 2px */
-        border-right: none; /* 移除右邊框 */
-        height: 100%;
-    }
+/* ===== ACTIVE TAB ===== */
+.tab.active {
+    background: linear-gradient(
+        to bottom,
+        #242424,
+        #1b1b1b
+    );
+    color: #f0f0f0;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 -1px 0 #3a3a3a;
+    border-radius: 9px 9px 0 0;
+    z-index: 2;
+}
 
-    .tab-icon {
-        width: 14px;
-        height: 14px;
-        margin-right: 8px;
-        opacity: 0.7;
-    }
+/* ===== Icon ===== */
+.tab-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    opacity: .8;
+}
 
-    /* ===== 叉叉圖示 ===== */
-    .close {
-        width: 22px;
-        height: 22px;
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-    }
+/* ===== Close Button ===== */
+.close {
+    margin-left: 10px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
 
-    .close:hover { background: #2a2a2a; }
+.close:hover {
+    background: rgba(255,255,255,.08);
+}
 
-    .close svg {
-        width: 10px;
-        height: 10px;
-        stroke: #888888;
-        stroke-width: 2.2px;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
+.close svg {
+    width: 9px;
+    height: 9px;
+    stroke: #aaa;
+    stroke-width: 2.2px;
+}
 
-    .close:hover svg { stroke: #ffffff; }
+.tab.active .close svg {
+    stroke: #fff;
+}
 
-    /* ===== 右側加號按鈕 ===== */
-    .add-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        cursor: pointer;
-        color: #777;
-    }
+/* ===== Add Button ===== */
+.add-btn {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #777;
+}
 
-    .add-btn:hover { background: #101010; color: #fff; }
+.add-btn:hover {
+    color: #fff;
+}
 
-    .add-btn svg {
-        width: 13px;
-        height: 13px;
-        stroke: currentColor;
-        stroke-width: 2.2px;
-    }
-
-    /* ===== 編輯器區域 ===== */
-    #editor {
-        width: 100%;
-        height: calc(100% - 38px);
-    }
+/* ===== Editor ===== */
+#editor {
+    width: 100%;
+    height: calc(100% - 38px);
+}
 </style>
 </head>
 
@@ -128,8 +134,11 @@
 <div id="tabs-container">
     <div id="tabs"></div>
     <div class="add-btn" id="add-tab-btn">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"/>
         </svg>
     </div>
 </div>
@@ -146,50 +155,25 @@ require(['vs/editor/editor.main'], () => {
     monaco.editor.defineTheme('custom-dark', {
         base: 'vs-dark',
         inherit: true,
-        rules: [
-            { token: 'keyword', foreground: 'c586c0' },
-            { token: 'number', foreground: 'b5cea8' },
-            { token: 'string', foreground: 'ce9178' },
-            { token: 'comment', foreground: '6a9955' },
-            { token: 'identifier', foreground: '9cdcfe' }
-        ],
         colors: {
-            'editor.background': '#101010', // 編輯區底色改為 101010
-            'editor.lineHighlightBackground': '#00000000',
-            'editor.lineHighlightBorder': '#333333',
-            'editorCursor.foreground': '#ffffff',
-            'editor.selectionBackground': '#2a2a2a',
-            'editorLineNumber.foreground': '#454545',
-            'editorLineNumber.activeForeground': '#999999'
+            'editor.background': '#101010',
+            'editorCursor.foreground': '#ffffff'
         }
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'New Tab 1', code: '-- Feairl Hello --\nprint("Hello Word")' }
+        { id: 'script_1', name: 'New Tab 1', code: '-- Feairl Hello --\nprint("Hello World")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
     window.editor = monaco.editor.create(document.getElementById('editor'), {
-        value: '',
         language: 'lua',
         theme: 'custom-dark',
         fontSize: 14,
         minimap: { enabled: false },
-        renderLineHighlight: 'line',
-        renderLineHighlightOnlyWhenFocus: true,
         automaticLayout: true,
-        fontFamily: "'Cascadia Code', 'Consolas', monospace",
-        lineNumbersMinChars: 3,
-        cursorSmoothCaretAnimation: "on",
-        cursorBlinking: "smooth",
-        cursorStyle: "line",
-        smoothScrolling: true,
-        scrollbar: {
-            vertical: 'visible',
-            horizontal: 'visible',
-            verticalScrollbarSize: 10,
-            horizontalScrollbarSize: 10
-        }
+        cursorBlinking: 'smooth',
+        cursorStyle: 'line'
     });
 
     const tabsDiv = document.getElementById('tabs');
@@ -199,20 +183,29 @@ require(['vs/editor/editor.main'], () => {
         localStorage.setItem('lua_active', activeTab);
     }
 
+    function moveCursorToEnd() {
+        const model = editor.getModel();
+        if (!model) return;
+        const line = model.getLineCount();
+        const col = model.getLineMaxColumn(line);
+        editor.setPosition({ lineNumber: line, column: col });
+        editor.revealPositionInCenter({ lineNumber: line, column: col });
+        editor.focus();
+    }
+
     function renderTabs() {
         tabsDiv.innerHTML = '';
         tabs.forEach(t => {
             const tab = document.createElement('div');
             tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
-            
-            const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
-            
             tab.innerHTML = `
-                ${icon}
-                <span class="tab-label">${t.name}</span>
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                </svg>
+                <span>${t.name}</span>
                 <div class="close">
                     <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" />
+                        <path d="M18 6L6 18M6 6l12 12"/>
                     </svg>
                 </div>
             `;
@@ -224,14 +217,11 @@ require(['vs/editor/editor.main'], () => {
                 loadTab();
             };
 
-            tab.querySelector('.close').onclick = (e) => {
+            tab.querySelector('.close').onclick = e => {
                 e.stopPropagation();
                 if (tabs.length === 1) return;
-                const index = tabs.findIndex(x => x.id === t.id);
                 tabs = tabs.filter(x => x.id !== t.id);
-                if (activeTab === t.id) {
-                    activeTab = tabs[Math.max(0, index - 1)].id;
-                }
+                activeTab = tabs[0].id;
                 save();
                 renderTabs();
                 loadTab();
@@ -241,22 +231,21 @@ require(['vs/editor/editor.main'], () => {
         });
     }
 
+    function loadTab() {
+        const t = tabs.find(x => x.id === activeTab);
+        if (!t) return;
+        editor.setValue(t.code);
+        setTimeout(moveCursorToEnd, 0);
+    }
+
     document.getElementById('add-tab-btn').onclick = () => {
         const id = 'script_' + Date.now();
-        tabs.push({ id, name: 'New Tab ' + (tabs.length + 1), code: '' });
+        tabs.push({ id, name: 'New Tab', code: '' });
         activeTab = id;
         save();
         renderTabs();
         loadTab();
     };
-
-    function loadTab() {
-        const t = tabs.find(x => x.id === activeTab);
-        if (t) {
-            editor.setValue(t.code);
-            editor.focus(); 
-        }
-    }
 
     editor.onDidChangeModelContent(() => {
         const t = tabs.find(x => x.id === activeTab);
@@ -264,20 +253,21 @@ require(['vs/editor/editor.main'], () => {
             t.code = editor.getValue();
             save();
         }
+        moveCursorToEnd();
+    });
+
+    editor.onDidBlurEditorText(() => {
+        setTimeout(moveCursorToEnd, 0);
+    });
+
+    editor.onMouseDown(() => {
+        setTimeout(moveCursorToEnd, 0);
     });
 
     renderTabs();
     loadTab();
-    editor.focus();
-
-    window.EditorAPI = {
-        getCode: () => editor.getValue(),
-        setCode: (code) => {
-            editor.setValue(code || "");
-            editor.focus();
-        }
-    };
 });
 </script>
+
 </body>
 </html>
