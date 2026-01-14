@@ -15,98 +15,58 @@ html, body {
     overflow: hidden;
 }
 
-/* ===== Tab Bar ===== */
+/* ===== 分頁欄容器 ===== */
 #tabs-container {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     height: 38px;
     background: #101010;
-    padding-left: 6px;
-    box-sizing: border-box;
 }
 
-/* ===== Tabs ===== */
+/* ===== 分頁區 ===== */
 #tabs {
     display: flex;
-    align-items: flex-end;
     height: 100%;
-    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
+#tabs::-webkit-scrollbar { display: none; }
 
-/* ===== Tab (default) ===== */
+/* ===== Tab ===== */
 .tab {
     display: flex;
     align-items: center;
-    height: 30px;
     padding: 0 14px;
+    color: #707070;
     font-size: 12.5px;
-    color: #7a7a7a;
     cursor: pointer;
-    user-select: none;
-    background: transparent;
-    border-radius: 8px 8px 0 0;
-    transition: 
-        background .15s ease,
-        color .15s ease,
-        box-shadow .15s ease;
+    border-right: 1px solid #1a1a1a;
 }
-
-.tab:hover {
-    background: #161616;
-    color: #b0b0b0;
-}
-
-/* ===== ACTIVE TAB ===== */
 .tab.active {
-    background: linear-gradient(
-        to bottom,
-        #242424,
-        #1b1b1b
-    );
-    color: #f0f0f0;
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.06),
-        0 -1px 0 #3a3a3a;
-    border-radius: 9px 9px 0 0;
-    z-index: 2;
+    color: #fff;
+    border-top: 2px solid #555;
+    border-right: none;
 }
 
-/* ===== Icon ===== */
 .tab-icon {
     width: 14px;
     height: 14px;
     margin-right: 8px;
-    opacity: .8;
+    opacity: .7;
 }
 
-/* ===== Close Button ===== */
 .close {
-    margin-left: 10px;
-    width: 18px;
-    height: 18px;
+    margin-left: auto;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
 }
+.close:hover { background: #2a2a2a; }
 
-.close:hover {
-    background: rgba(255,255,255,.08);
-}
-
-.close svg {
-    width: 9px;
-    height: 9px;
-    stroke: #aaa;
-    stroke-width: 2.2px;
-}
-
-.tab.active .close svg {
-    stroke: #fff;
-}
-
-/* ===== Add Button ===== */
+/* ===== 新增按鈕 ===== */
 .add-btn {
     width: 38px;
     height: 38px;
@@ -116,12 +76,9 @@ html, body {
     cursor: pointer;
     color: #777;
 }
+.add-btn:hover { color: #fff; }
 
-.add-btn:hover {
-    color: #fff;
-}
-
-/* ===== Editor ===== */
+/* ===== 編輯器 ===== */
 #editor {
     width: 100%;
     height: calc(100% - 38px);
@@ -135,10 +92,7 @@ html, body {
     <div id="tabs"></div>
     <div class="add-btn" id="add-tab-btn">
         <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 5V19M5 12H19"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"/>
+            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
     </div>
 </div>
@@ -186,10 +140,11 @@ require(['vs/editor/editor.main'], () => {
     function moveCursorToEnd() {
         const model = editor.getModel();
         if (!model) return;
-        const line = model.getLineCount();
-        const col = model.getLineMaxColumn(line);
-        editor.setPosition({ lineNumber: line, column: col });
-        editor.revealPositionInCenter({ lineNumber: line, column: col });
+        const lastLine = model.getLineCount();
+        const lastCol = model.getLineMaxColumn(lastLine);
+
+        editor.setPosition({ lineNumber: lastLine, column: lastCol });
+        editor.revealPositionInCenter({ lineNumber: lastLine, column: lastCol });
         editor.focus();
     }
 
@@ -203,11 +158,7 @@ require(['vs/editor/editor.main'], () => {
                     <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
                 </svg>
                 <span>${t.name}</span>
-                <div class="close">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </div>
+                <div class="close">✕</div>
             `;
 
             tab.onclick = () => {
