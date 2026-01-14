@@ -15,7 +15,7 @@ html,body{
     overflow:hidden;
 }
 
-/* ===== TAB BAR CONTAINER ===== */
+/* ===== TAB BAR ===== */
 #tabs-container {
     display: flex;
     align-items: center;
@@ -35,17 +35,17 @@ html,body{
 .tab {
     display: flex;
     align-items: center;
-    height: 100%; /* 讓它撐滿容器高度 */
-    padding: 0 14px;
+    height: 100%;
+    padding: 0 12px;
     background: transparent;
     color: #858585;
     cursor: pointer;
     user-select: none;
-    font-size: 12px;
+    font-size: 13px;
     position: relative;
     border-right: 1px solid #1a1a1a;
-    box-sizing: border-box; /* 確保邊框計算正確 */
-    transition: background .12s, color .12s;
+    box-sizing: border-box;
+    transition: background .1s, color .1s;
 }
 
 .tab:hover {
@@ -53,41 +53,25 @@ html,body{
     color: #ccc;
 }
 
-/* ===== 加粗的頂部線條 ===== */
 .tab.active {
-    background: #111111;
+    background: #0f0f0f;
     color: #ffffff;
-    /* 修改這裡：將線條加粗到 2.5px 或 3px，並給予更明亮的顏色 */
-    border-top: 2.5px solid #4a4a4a; 
+    /* 加粗頂部線 */
+    border-top: 3px solid #505050; 
 }
 
-/* 分頁圖示 */
 .tab-icon {
     width: 14px;
     height: 14px;
     margin-right: 8px;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
-.tab-content {
-    display: flex;
-    align-items: center;
-}
-
-.tab input.rename {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #ffffff;
-    font-size: 12px;
-    width: 65px;
-}
-
-/* ===== 關閉按鈕 (視覺細、點擊區大) ===== */
+/* ===== 叉叉圖示 (放大且清晰) ===== */
 .close {
-    width: 22px; 
-    height: 22px; 
-    margin-left: 6px;
+    width: 24px; 
+    height: 24px; 
+    margin-left: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,44 +79,43 @@ html,body{
 }
 
 .close:hover {
-    background: #2a2a2a;
+    background: #333333;
 }
 
 .close svg {
-    width: 9px; 
-    height: 9px;
-    stroke: #8f8f8f;
-    stroke-width: 1.8px; /* 線條稍微加強一點點視覺感 */
+    width: 12px; /* 尺寸適中 */
+    height: 12px;
+    stroke: #999999;
+    stroke-width: 2.2px; /* 增加線條粗細，使其明顯 */
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .close:hover svg {
     stroke: #ffffff;
 }
 
-/* ===== 右側加號 (固定在最右邊) ===== */
+/* ===== 右側加號 ===== */
 .add-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px; 
-    height: 34px;
-    margin-right: 6px;
+    width: 38px; 
+    height: 38px;
     cursor: pointer;
-    color: #8f8f8f;
-    border-radius: 4px;
-    transition: background .12s, color .12s;
+    color: #999;
 }
 
 .add-btn:hover {
-    background: #1f1f1f;
-    color: #ffffff;
+    background: #1a1a1a;
+    color: #fff;
 }
 
 .add-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     stroke: currentColor;
-    stroke-width: 1.2px;
+    stroke-width: 1.5px;
 }
 
 /* ===== EDITOR ===== */
@@ -146,7 +129,7 @@ html,body{
 <body>
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn" title="New Tab">
+    <div class="add-btn" id="add-tab-btn">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -161,7 +144,7 @@ require.config({
 
 require(['vs/editor/editor.main'], () => {
 
-/* ===== THEME ===== */
+/* ===== THEME & HOLLOW HIGHLIGHT ===== */
 monaco.editor.defineTheme('dark-executor', {
     base:'vs-dark',
     inherit:true,
@@ -174,42 +157,32 @@ monaco.editor.defineTheme('dark-executor', {
     ],
     colors:{
         'editor.background':'#0d0d0d',
-        'editor.lineHighlightBackground':'#1a1a1a',
+        // 空心高亮的關鍵：背景設為透明，給予邊框顏色
+        'editor.lineHighlightBackground':'#00000000', 
+        'editor.lineHighlightBorder':'#3a3a3a', 
         'editorCursor.foreground':'#ffffff',
         'editor.selectionBackground':'#2a2a2a'
     }
 });
 
-/* ===== DATA ===== */
+/* ===== DATA & INIT ===== */
 window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [{
-    id:'script_1',
-    name:'New Tab 1',
-    code:'-- Welcome\nprint("Hello World")'
+    id:'script_1', name:'New Tab 1', code:'-- Hollow highlight active\nprint("Hello World")'
 }];
 window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
-/* ===== EDITOR ===== */
-window.editor = monaco.editor.create(
-    document.getElementById('editor'),
-    {
-        value:'',
-        language:'lua',
-        theme:'dark-executor',
-        fontSize:14,
-        minimap:{ enabled:false },
-        smoothScrolling:true,
-        cursorSmoothCaretAnimation:true,
-        cursorBlinking:'smooth',
-        lineNumbersMinChars: 3,
-        scrollbar: {
-            vertical: 'visible',
-            horizontal: 'visible',
-            useShadows: false,
-            verticalScrollbarSize: 10,
-            horizontalScrollbarSize: 10
-        }
-    }
-);
+window.editor = monaco.editor.create(document.getElementById('editor'), {
+    value:'',
+    language:'lua',
+    theme:'dark-executor',
+    fontSize:14,
+    minimap:{ enabled:false },
+    smoothScrolling:true,
+    cursorSmoothCaretAnimation:true,
+    cursorBlinking:'smooth',
+    renderLineHighlight: 'all', // 確保高亮應用到整行
+    lineNumbersMinChars: 3
+});
 
 const tabsDiv = document.getElementById('tabs');
 
@@ -220,50 +193,23 @@ function save(){
 
 function renderTabs(){
     tabsDiv.innerHTML='';
-
     tabs.forEach(t=>{
         const tab=document.createElement('div');
         tab.className='tab'+(t.id===activeTab?' active':'');
-
-        // 文件圖示
-        const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
-
+        const icon = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+        
         tab.innerHTML = `
             ${icon}
-            <div class="tab-content">
-                <span class="tab-label">${t.name}</span>
-            </div>
+            <span class="tab-label">${t.name}</span>
             <div class="close">
-                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
             </div>
         `;
 
-        tab.ondblclick=e=>{
-            e.stopPropagation();
-            const label = tab.querySelector('.tab-label');
-            const input=document.createElement('input');
-            input.className='rename';
-            input.value=t.name;
-            label.parentNode.replaceChild(input,label);
-            input.focus();
-            input.select();
-            input.onkeydown=ev=>{
-                if(ev.key==='Enter'){
-                    t.name=input.value.trim()||t.name;
-                    save(); renderTabs();
-                }
-            };
-            input.onblur=()=>renderTabs();
-        };
-
-        tab.onclick=()=>{
-            activeTab=t.id;
-            save(); renderTabs(); loadTab();
-        };
-
+        tab.onclick=()=>{ activeTab=t.id; save(); renderTabs(); loadTab(); };
+        
         tab.querySelector('.close').onclick=e=>{
             e.stopPropagation();
             if(tabs.length === 1) return;
@@ -278,8 +224,7 @@ function renderTabs(){
 
 document.getElementById('add-tab-btn').onclick=()=>{
     const id = 'script_' + Date.now();
-    const n = tabs.length + 1;
-    tabs.push({ id, name: 'New Tab ' + n, code: '' });
+    tabs.push({ id, name: 'New Tab ' + (tabs.length + 1), code: '' });
     activeTab = id;
     save(); renderTabs(); loadTab();
 };
@@ -287,7 +232,6 @@ document.getElementById('add-tab-btn').onclick=()=>{
 function loadTab(){
     const t=tabs.find(x=>x.id===activeTab);
     if(t) editor.setValue(t.code);
-    setTimeout(()=>editor.layout(), 10);
 }
 
 editor.onDidChangeModelContent(()=>{
@@ -297,18 +241,6 @@ editor.onDidChangeModelContent(()=>{
 
 renderTabs();
 loadTab();
-
-window.EditorAPI = {
-    getCode: () => window.editor.getValue(),
-    setCode: (code) => {
-        window.editor.setValue(code || "");
-        setTimeout(()=>editor.layout(),0);
-    }
-};
-
-if(window.chrome && window.chrome.webview){
-    window.chrome.webview.postMessage("editor-ready");
-}
 
 });
 </script>
