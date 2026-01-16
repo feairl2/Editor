@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Pro Editor - Enhanced Glow</title>
+<title>Pro Editor - Refined Glow</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
@@ -11,16 +11,17 @@
         margin: 0;
         height: 100%;
         background: #101010;
-        font-family: -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif;
+        font-family: -apple-system, "Segoe UI", sans-serif;
         overflow: hidden;
     }
 
+    /* ===== Tab 列：精簡高度，一體化色彩 ===== */
     #tabs-container {
         display: flex;
         align-items: center;
-        height: 60px; /* 再次微調高度以容納大按鈕 */
+        height: 44px; /* 調回精悍的高度 */
         background: #101010; 
-        padding: 0 16px;
+        padding: 0 12px;
         box-sizing: border-box;
     }
 
@@ -28,44 +29,43 @@
         display: flex;
         align-items: center;
         height: 100%;
-        gap: 8px;
+        gap: 6px;
     }
 
-    /* ===== Tab 樣式調整 ===== */
+    /* ===== 精緻尺寸的 Tab ===== */
     .tab {
         display: flex;
         align-items: center;
-        height: 40px; 
-        padding: 0 16px;
+        height: 32px; 
+        padding: 0 12px;
         color: #777;
         cursor: pointer;
         user-select: none;
-        font-size: 14px;
-        border-radius: 8px;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        min-width: 120px;
-        max-width: 180px;
+        font-size: 13px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        min-width: 100px;
+        max-width: 160px;
         border: 1px solid transparent;
-        background: transparent;
     }
 
     .tab:hover {
-        color: #bbb;
-        background: rgba(255, 255, 255, 0.05);
+        color: #999;
+        background: rgba(255, 255, 255, 0.04);
     }
 
-    /* 選中狀態：更亮的背景與明顯的黃色邊框 */
+    /* 選中狀態：更亮背景 + 黃色微光邊框 */
     .tab.active {
-        background: #252525; /* 提升亮度，確保叉叉清晰 */
+        background: #2a2a2a; /* 稍微再亮一點，增加對比 */
         color: #ffd700;
-        border: 1px solid rgba(255, 215, 0, 0.5);
-        box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+        border: 1px solid rgba(255, 215, 0, 0.6);
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.12);
     }
 
     .tab-icon {
-        width: 16px;
-        height: 16px;
-        margin-right: 10px;
+        width: 14px;
+        height: 14px;
+        margin-right: 8px;
         opacity: 0.5;
     }
     .active .tab-icon { opacity: 1; }
@@ -75,51 +75,49 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-weight: 600;
+        font-weight: 500;
     }
 
-    /* ===== 加大版關閉按鈕 ===== */
+    /* ===== 比例適中的關閉按鈕 ===== */
     .close {
-        width: 24px; /* 調大尺寸 */
-        height: 24px;
-        margin-left: 8px;
+        width: 20px;
+        height: 20px;
+        margin-left: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 6px;
+        border-radius: 4px;
         transition: all 0.2s;
-        opacity: 0.3; /* 非選中時較淡 */
+        opacity: 0.4;
     }
 
-    /* 選中或懸停時讓叉叉變清楚 */
+    /* 選中或懸停時，叉叉非常清楚 */
     .tab.active .close, .tab:hover .close {
-        opacity: 0.8;
-        color: #fff;
+        opacity: 0.9;
     }
 
     .close:hover { 
         background: rgba(255, 255, 255, 0.15); 
-        opacity: 1 !important;
-        color: #ff5f56 !important; /* 懸停叉叉變紅提示 */
+        color: #ff5f56 !important;
     }
 
     .close svg {
-        width: 12px; /* 圖示調大 */
-        height: 12px;
+        width: 10px; /* 圖示維持清晰比例 */
+        height: 10px;
         stroke: currentColor;
-        stroke-width: 3px; /* 線條加粗 */
+        stroke-width: 2.5px;
     }
 
-    /* ===== 明顯的新增按鈕 ===== */
+    /* ===== 顯眼但精緻的新增按鈕 ===== */
     .add-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 38px; /* 調大尺寸 */
-        height: 38px;
-        margin-left: 12px;
-        border-radius: 10px;
-        background: #1e1e1e; /* 實體背景色使其明顯 */
+        width: 32px;
+        height: 32px;
+        margin-left: 10px;
+        border-radius: 6px;
+        background: #1e1e1e; /* 實體感背景 */
         color: #888;
         cursor: pointer;
         transition: all 0.2s;
@@ -127,24 +125,22 @@
     }
 
     .add-btn:hover {
-        background: #282828;
+        background: #2a2a2a;
         color: #ffd700;
         border-color: rgba(255, 215, 0, 0.4);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
     .add-btn svg {
-        width: 22px; /* 圖示調大 */
-        height: 22px;
+        width: 18px;
+        height: 18px;
         stroke: currentColor;
-        stroke-width: 2.5px;
+        stroke-width: 2px;
     }
 
     /* ===== 編輯器區域 ===== */
     #editor {
         width: 100%;
-        height: calc(100% - 60px);
+        height: calc(100% - 44px);
     }
 </style>
 </head>
@@ -153,7 +149,7 @@
 
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn" title="Add New Script">
+    <div class="add-btn" id="add-tab-btn" title="New Script">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -176,14 +172,14 @@ require(['vs/editor/editor.main'], () => {
             'editor.background': '#101010',
             'editor.lineHighlightBackground': '#181818',
             'editorCursor.foreground': '#ffd700',
-            'editor.selectionBackground': '#333333',
+            'editor.selectionBackground': '#2a2a2a',
             'editorLineNumber.foreground': '#444',
             'editorLineNumber.activeForeground': '#ffd700'
         }
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'main.lua', code: '-- Refined & High Contrast\nprint("Better visibility.")' }
+        { id: 'script_1', name: 'main.lua', code: '-- Refined & Compact\nprint("Balanced design.")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
@@ -194,10 +190,9 @@ require(['vs/editor/editor.main'], () => {
         fontSize: 14,
         minimap: { enabled: false },
         automaticLayout: true,
-        fontFamily: "'JetBrains Mono', 'Consolas', monospace",
+        fontFamily: "'JetBrains Mono', monospace",
         cursorBlinking: "smooth",
-        padding: { top: 20 },
-        renderLineHighlight: "all"
+        padding: { top: 12 }
     });
 
     const tabsDiv = document.getElementById('tabs');
