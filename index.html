@@ -87,8 +87,8 @@
 
     /* 摺疊狀態：強迫高度為 44px (Header 32 + Padding 12) */
     #console-wrapper.collapsed {
-        height: 44px !important;
-    }
+    max-height: 44px !important;
+}
 
     #console-panel {
         background: #111;
@@ -246,16 +246,14 @@ window.toggleConsole = function () {
     const isCollapsed = wrapper.classList.contains('collapsed');
 
     if (isCollapsed) {
-        // 展開
         wrapper.classList.remove('collapsed');
-        wrapper.style.height = 'var(--console-height)';
+        wrapper.style.maxHeight = 'var(--console-height)';
     } else {
-        // 收起
         wrapper.classList.add('collapsed');
-        wrapper.style.height = '44px';
+        wrapper.style.maxHeight = '44px';
     }
 
-    // 平滑同步 Monaco 佈局
+    // Monaco layout 同步
     let start = Date.now();
     const timer = setInterval(() => {
         if (window.editor) window.editor.layout();
