@@ -2,137 +2,146 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Pro Editor - Final Glow</title>
+<title>Pro Editor - Refined Glow</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
 <style>
-    :root {
-        --bg-color: #0c0c0c;
-        --accent-color: #ffd700;
-        --border-color: #2a2a2a;
-        --tab-active: #222222;
-        --console-height: 200px;
-    }
-
     html, body {
-        margin: 0; height: 100%;
-        background: var(--bg-color);
+        margin: 0;
+        height: 100%;
+        background: #101010;
         font-family: -apple-system, "Segoe UI", sans-serif;
         overflow: hidden;
-        display: flex; flex-direction: column;
     }
 
-    /* ===== Tab 列 ===== */
+    /* ===== Tab 列：精簡高度，一體化色彩 ===== */
     #tabs-container {
-        display: flex; align-items: center; height: 48px;
-        background: var(--bg-color); padding: 0 12px;
-        flex-shrink: 0; border-bottom: 1px solid #1a1a1a;
+        display: flex;
+        align-items: center;
+        height: 44px; /* 調回精悍的高度 */
+        background: #101010; 
+        padding: 0 12px;
+        box-sizing: border-box;
     }
 
-    #tabs { display: flex; align-items: center; gap: 6px; overflow: hidden; }
-
-    .tab {
-        display: flex; align-items: center; height: 34px; padding: 0 10px;
-        color: #888; cursor: pointer; font-size: 13px; border-radius: 6px;
-        transition: all 0.2s; min-width: 120px; max-width: 180px;
-        flex-shrink: 0; background: rgba(255,255,255,0.03);
-        border: 1px solid transparent;
-        justify-content: space-between;
-    }
-    .tab.active {
-        background: var(--tab-active); color: var(--accent-color);
-        border: 1px solid rgba(255, 215, 0, 0.4);
-        box-shadow: 0 0 10px rgba(255, 215, 0, 0.05);
-    }
-
-    .tab-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px; }
-
-    /* 叉叉按鈕固定在右側 */
-    .close {
-        width: 18px; height: 18px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 4px; opacity: 0.4; flex-shrink: 0;
-    }
-    .close:hover { background: rgba(255, 255, 255, 0.1); color: #ff5f56 !important; opacity: 1; }
-    .close svg { width: 9px; height: 9px; stroke: currentColor; stroke-width: 3px; }
-
-    /* ===== 預設明顯的新增按鈕 ===== */
-    .add-btn {
-        display: flex; align-items: center; justify-content: center;
-        width: 30px; height: 30px; margin-left: 14px; border-radius: 6px;
-        background: #1e1e1e; 
-        color: var(--accent-color); /* 預設亮色 */
-        cursor: pointer; 
-        border: 1px solid rgba(255, 215, 0, 0.6); /* 預設黃色邊框 */
-        flex-shrink: 0; transition: all 0.2s;
-        box-shadow: 0 0 8px rgba(255, 215, 0, 0.15); /* 預設微光 */
-    }
-    .add-btn:hover { 
-        background: var(--accent-color);
-        color: #000;
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-    }
-    .add-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5px; }
-
-    /* ===== 編輯器區域 ===== */
-    #editor-container { flex: 1; position: relative; }
-
-    /* ===== Console 區域 (徹底修復展開問題) ===== */
-    #console-wrapper {
-    max-height: var(--console-height);
-    flex-shrink: 0;
-    transition: max-height 0.3s ease-in-out;
-}
-
-    /* 摺疊狀態：強迫高度為 44px (Header 32 + Padding 12) */
-    #console-wrapper.collapsed {
-    max-height: 44px !important;
-}
-
-    #console-panel {
-        background: #111;
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
+    #tabs {
+        display: flex;
+        align-items: center;
         height: 100%;
-        display: flex; flex-direction: column;
-        overflow: hidden;
+        gap: 6px;
     }
 
-    /* 點擊整個 Header 觸發 */
-    #console-header {
-        height: 32px; min-height: 32px;
-        background: #1a1a1a;
-        display: flex; align-items: center; padding: 0 12px;
-        justify-content: space-between;
-        border-bottom: 1px solid #222;
+    /* ===== 精緻尺寸的 Tab ===== */
+    .tab {
+        display: flex;
+        align-items: center;
+        height: 32px; 
+        padding: 0 12px;
+        color: #777;
         cursor: pointer;
         user-select: none;
+        font-size: 13px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        min-width: 100px;
+        max-width: 160px;
+        border: 1px solid transparent;
     }
 
-    #console-header span { color: #555; font-size: 10px; font-weight: 900; letter-spacing: 1.5px; }
-
-    .collapse-trigger {
-        width: 24px; height: 24px;
-        display: flex; align-items: center; justify-content: center;
-        color: #444; transition: 0.3s;
-    }
-    /* 摺疊時箭頭向上翻轉 */
-    #console-wrapper.collapsed .collapse-trigger svg { transform: rotate(180deg); color: var(--accent-color); }
-
-    #console-logs {
-        flex: 1; overflow-y: auto; padding: 10px;
-        font-family: 'JetBrains Mono', monospace; font-size: 12px;
-        background: #0a0a0a;
+    .tab:hover {
+        color: #999;
+        background: rgba(255, 255, 255, 0.04);
     }
 
-    .log-item { margin-bottom: 4px; display: flex; align-items: center; }
-    .log-time { color: #2a2a2a; margin-right: 8px; font-size: 11px; flex-shrink: 0; }
-    .log-system { color: #5c7cfa; font-weight: bold; } /* 系統藍色 */
-    .log-msg { color: #999; }
+    /* 選中狀態：更亮背景 + 黃色微光邊框 */
+    .tab.active {
+        background: #2a2a2a; /* 稍微再亮一點，增加對比 */
+        color: #ffd700;
+        border: 1px solid rgba(255, 215, 0, 0.6);
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.12);
+    }
 
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+    .tab-icon {
+        width: 14px;
+        height: 14px;
+        margin-right: 8px;
+        opacity: 0.5;
+    }
+    .active .tab-icon { opacity: 1; }
+
+    .tab-label {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
+    }
+
+    /* ===== 比例適中的關閉按鈕 ===== */
+    .close {
+        width: 20px;
+        height: 20px;
+        margin-left: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s;
+        opacity: 0.4;
+    }
+
+    /* 選中或懸停時，叉叉非常清楚 */
+    .tab.active .close, .tab:hover .close {
+        opacity: 0.9;
+    }
+
+    .close:hover { 
+        background: rgba(255, 255, 255, 0.15); 
+        color: #ff5f56 !important;
+    }
+
+    .close svg {
+        width: 10px; /* 圖示維持清晰比例 */
+        height: 10px;
+        stroke: currentColor;
+        stroke-width: 2.5px;
+    }
+
+    /* ===== 顯眼但精緻的新增按鈕 ===== */
+    .add-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        margin-left: 10px;
+        border-radius: 6px;
+        background: #1e1e1e; /* 實體感背景 */
+        color: #888;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #333;
+    }
+
+    .add-btn:hover {
+        background: #2a2a2a;
+        color: #ffd700;
+        border-color: rgba(255, 215, 0, 0.4);
+    }
+
+    .add-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2px;
+    }
+
+    /* ===== 編輯器區域 ===== */
+    #editor {
+        width: 100%;
+        height: calc(100% - 44px);
+    }
 </style>
 </head>
 
@@ -140,139 +149,139 @@
 
 <div id="tabs-container">
     <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <div class="add-btn" id="add-tab-btn" title="New Script">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </div>
 </div>
 
-<div id="editor-container">
-    <div id="editor" style="height: 100%;"></div>
-</div>
-
-<div id="console-wrapper">
-    <div id="console-panel">
-        <div id="console-header" onclick="toggleConsole()">
-            <span>DEBUG CONSOLE</span>
-            <div class="collapse-trigger">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:14px;">
-                    <path d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-        </div>
-        <div id="console-logs"></div>
-    </div>
-</div>
+<div id="editor"></div>
 
 <script>
-require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+require.config({
+    paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }
+});
 
 require(['vs/editor/editor.main'], () => {
     monaco.editor.defineTheme('custom-dark', {
-        base: 'vs-dark', inherit: true, rules: [],
+        base: 'vs-dark',
+        inherit: true,
+        rules: [],
         colors: {
-            'editor.background': '#0c0c0c',
+            'editor.background': '#101010',
+            'editor.lineHighlightBackground': '#181818',
             'editorCursor.foreground': '#ffd700',
-            'editorLineNumber.activeForeground': '#ffd700',
-            'editor.lineHighlightBackground': '#111111'
+            'editor.selectionBackground': '#2a2a2a',
+            'editorLineNumber.foreground': '#444',
+            'editorLineNumber.activeForeground': '#ffd700'
         }
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'main.lua', code: '-- Pro Editor Initialized' }
+        { id: 'script_1', name: 'main.lua', code: '-- feairlteam.vercel.app\nprint("Feairl Injected")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
     window.editor = monaco.editor.create(document.getElementById('editor'), {
-        language: 'lua', theme: 'custom-dark', fontSize: 14,
-        minimap: { enabled: false }, automaticLayout: true,
-        fontFamily: "'JetBrains Mono', monospace", padding: { top: 12 }
-    });
+    value: '',
+    language: 'lua',
+    theme: 'custom-dark',
+    fontSize: 14,
+    minimap: { enabled: false },
+    automaticLayout: true,
+    fontFamily: "'JetBrains Mono', monospace",
 
-    function renderTabs() {
-        const tabsDiv = document.getElementById('tabs');
-        tabsDiv.innerHTML = '';
-        tabs.forEach(t => {
-            const tab = document.createElement('div');
-            tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
-            tab.innerHTML = `
-                <span class="tab-label">${t.name}</span>
-                <div class="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" /></svg></div>
-            `;
-            tab.onclick = () => { activeTab = t.id; save(); renderTabs(); loadTab(); };
-            tab.querySelector('.close').onclick = (e) => {
-                e.stopPropagation();
-                if (tabs.length === 1) return;
-                const idx = tabs.findIndex(x => x.id === t.id);
-                tabs = tabs.filter(x => x.id !== t.id);
-                if (activeTab === t.id) activeTab = tabs[Math.max(0, idx - 1)].id;
-                save(); renderTabs(); loadTab();
-            };
-            tabsDiv.appendChild(tab);
-        });
-    }
+    cursorBlinking: "smooth",
+    cursorSmoothCaretAnimation: true,
+    cursorSmoothCaretAnimationDuration: 120,
+
+    smoothScrolling: true,
+    mouseWheelScrollSensitivity: 1,
+    fastScrollSensitivity: 1,
+
+    padding: { top: 12 }
+});
+
+
+    const tabsDiv = document.getElementById('tabs');
 
     function save() {
         localStorage.setItem('lua_tabs', JSON.stringify(tabs));
         localStorage.setItem('lua_active', activeTab);
     }
 
-    function loadTab() {
-        const t = tabs.find(x => x.id === activeTab);
-        if (t) { editor.setValue(t.code); editor.focus(); }
+    function renderTabs() {
+        tabsDiv.innerHTML = '';
+        tabs.forEach(t => {
+            const tab = document.createElement('div');
+            tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
+            
+            const iconSvg = `<svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+            
+            tab.innerHTML = `
+                ${iconSvg}
+                <span class="tab-label">${t.name}</span>
+                <div class="close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </div>
+            `;
+
+            tab.onclick = () => {
+                activeTab = t.id;
+                save();
+                renderTabs();
+                loadTab();
+            };
+
+            tab.querySelector('.close').onclick = (e) => {
+                e.stopPropagation();
+                if (tabs.length === 1) return;
+                const index = tabs.findIndex(x => x.id === t.id);
+                tabs = tabs.filter(x => x.id !== t.id);
+                if (activeTab === t.id) {
+                    activeTab = tabs[Math.max(0, index - 1)].id;
+                }
+                save();
+                renderTabs();
+                loadTab();
+            };
+
+            tabsDiv.appendChild(tab);
+        });
     }
 
     document.getElementById('add-tab-btn').onclick = () => {
         const id = 'script_' + Date.now();
         tabs.push({ id, name: 'untitled.lua', code: '' });
-        activeTab = id; save(); renderTabs(); loadTab();
+        activeTab = id;
+        save();
+        renderTabs();
+        loadTab();
     };
+
+    function loadTab() {
+        const t = tabs.find(x => x.id === activeTab);
+        if (t) {
+            editor.setValue(t.code);
+            editor.focus(); 
+        }
+    }
 
     editor.onDidChangeModelContent(() => {
         const t = tabs.find(x => x.id === activeTab);
-        if (t) { t.code = editor.getValue(); save(); }
+        if (t) {
+            t.code = editor.getValue();
+            save();
+        }
     });
 
-    renderTabs(); loadTab();
-    
-    // 初始化訊息
-    setTimeout(() => { pushLog("Editor loaded successfully.", "system"); }, 200);
+    renderTabs();
+    loadTab();
+    editor.focus();
 });
-
-// --- Console 摺疊切換 (修正版) ---
-window.toggleConsole = function () {
-    const wrapper = document.getElementById('console-wrapper');
-    const isCollapsed = wrapper.classList.contains('collapsed');
-
-    if (isCollapsed) {
-        wrapper.classList.remove('collapsed');
-        wrapper.style.maxHeight = 'var(--console-height)';
-    } else {
-        wrapper.classList.add('collapsed');
-        wrapper.style.maxHeight = '44px';
-    }
-
-    // Monaco layout 同步
-    let start = Date.now();
-    const timer = setInterval(() => {
-        if (window.editor) window.editor.layout();
-        if (Date.now() - start > 400) clearInterval(timer);
-    }, 16);
-};
-
-window.pushLog = function(msg, type = 'info') {
-    const container = document.getElementById('console-logs');
-    const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const div = document.createElement('div');
-    div.className = `log-item`;
-    div.innerHTML = `
-        <span class="log-time">[${time}]</span>
-        <span class="log-msg ${type === 'system' ? 'log-system' : ''}">${msg}</span>
-    `;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-};
 </script>
 </body>
 </html>
