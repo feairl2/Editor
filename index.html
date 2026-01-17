@@ -183,9 +183,19 @@ function clearConsole() {
     logDisplay.innerHTML = '';
     appendLog('控制台已清空', 'info');
 }
+function setConsoleVisible(visible) {
+    const wrapper = document.getElementById('console-wrapper');
+    if (visible) {
+        wrapper.style.display = 'block';
+    } else {
+        wrapper.style.display = 'none';
+    }
 
-// 測試用：模擬外圍呼叫
-// setTimeout(() => appendLog('Roblox 注入成功！', 'success'), 2000);
+    if (window.editor) {
+        window.editor.layout();
+    }
+}
+    
 </script>
 </body>
 </html>
