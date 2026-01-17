@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Pro Editor - Refined Glow & Rounded Console</title>
+<title>Pro Editor - Refined Glow</title>
 
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
@@ -12,6 +12,7 @@
         --accent-color: #ffd700;
         --border-color: #222;
         --panel-bg: #151515;
+        --console-height: 180px;
     }
 
     html, body {
@@ -24,58 +25,64 @@
         flex-direction: column;
     }
 
-    /* ===== Tab 列：修復按鈕消失問題 ===== */
+    /* ===== Tab 列 ===== */
     #tabs-container {
         display: flex;
         align-items: center;
         height: 44px;
         background: var(--bg-color); 
         padding: 0 12px;
-        flex-shrink: 0; /* 確保不會被壓縮 */
+        flex-shrink: 0;
+        border-bottom: 1px solid #1a1a1a;
     }
 
-    #tabs { display: flex; align-items: center; gap: 6px; }
+    #tabs { display: flex; align-items: center; gap: 8px; overflow-x: auto; }
+    #tabs::-webkit-scrollbar { display: none; }
 
     .tab {
         display: flex; align-items: center; height: 32px; padding: 0 12px;
         color: #777; cursor: pointer; font-size: 13px; border-radius: 6px;
         transition: all 0.2s; min-width: 100px; max-width: 160px; border: 1px solid transparent;
-        flex-shrink: 0;
+        flex-shrink: 0; background: rgba(255,255,255,0.03);
     }
     .tab.active {
         background: #2a2a2a; color: var(--accent-color);
         border: 1px solid rgba(255, 215, 0, 0.6);
-        box-shadow: 0 0 8px rgba(255, 215, 0, 0.12);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.08);
     }
+    .tab-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+
+    /* 恢復叉叉按鈕樣式 */
+    .close {
+        width: 18px; height: 18px; margin-left: 6px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 4px; transition: all 0.2s; opacity: 0.3;
+    }
+    .tab:hover .close { opacity: 0.6; }
+    .close:hover { background: rgba(255, 255, 255, 0.1); color: #ff5f56 !important; opacity: 1 !important; }
+    .close svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 3px; }
 
     .add-btn {
         display: flex; align-items: center; justify-content: center;
         width: 30px; height: 30px; margin-left: 10px; border-radius: 6px;
         background: #1e1e1e; color: #888; cursor: pointer; border: 1px solid #333;
-        flex-shrink: 0; /* 強制不縮小 */
+        flex-shrink: 0;
     }
-    .add-btn:hover { background: #2a2a2a; color: var(--accent-color); border-color: rgba(255, 215, 0, 0.4); }
-    .add-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5px; }
+    .add-btn:hover { background: #2a2a2a; color: var(--accent-color); border-color: rgba(255, 215, 0, 0.3); }
 
     /* ===== 編輯器區域 ===== */
-    #editor-container {
-        flex: 1;
-        position: relative;
-    }
+    #editor-container { flex: 1; position: relative; }
 
-    /* ===== 圓角可折疊 Console ===== */
+    /* ===== 圓角 Console ===== */
     #console-wrapper {
-        padding: 0 12px 12px 12px; /* 留白讓圓角懸浮感更強 */
+        padding: 0 12px 12px 12px;
         background: var(--bg-color);
-        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        height: 180px; 
-        display: flex;
-        flex-direction: column;
+        height: var(--console-height);
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-shrink: 0;
     }
 
-    #console-wrapper.collapsed {
-        height: 42px; /* 只剩下 Header 的高度 */
-    }
+    #console-wrapper.collapsed { height: 52px; }
 
     #console-panel {
         background: var(--panel-bg);
@@ -85,45 +92,43 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
     }
 
     #console-header {
-        height: 30px;
-        min-height: 30px;
-        background: #1a1a1a;
-        display: flex;
-        align-items: center;
-        padding: 0 15px;
-        justify-content: space-between;
-        cursor: pointer; /* 點擊可摺疊 */
-        user-select: none;
+        height: 32px; background: #1a1a1a;
+        display: flex; align-items: center; padding: 0 15px;
+        justify-content: space-between; border-bottom: 1px solid #222;
     }
 
-    #console-header span { color: #666; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
+    #console-header span { color: #555; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }
 
-    .header-actions { display: flex; gap: 12px; align-items: center; }
-    .action-btn { color: #444; font-size: 10px; transition: color 0.2s; }
-    .action-btn:hover { color: var(--accent-color); }
+    .collapse-trigger {
+        width: 28px; height: 28px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; border-radius: 4px; transition: 0.2s;
+    }
+    .collapse-trigger:hover { background: rgba(255,255,255,0.05); color: var(--accent-color); }
+    .collapse-trigger svg { width: 14px; color: #666; transition: transform 0.3s; stroke-width: 3px; }
+
+    #console-wrapper.collapsed .collapse-trigger svg { transform: rotate(180deg); }
 
     #console-logs {
-        flex: 1;
-        overflow-y: auto;
-        padding: 10px 15px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        color: #bbb;
+        flex: 1; overflow-y: auto; padding: 12px;
+        font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5;
     }
 
-    /* Log 顏色 */
-    .log-item { margin-bottom: 4px; display: flex; }
-    .log-time { color: #444; margin-right: 10px; }
+    .log-item { margin-bottom: 4px; display: flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .log-time { color: #333; margin-right: 10px; font-size: 11px; flex-shrink: 0; }
     .log-success { color: #a3be8c; }
     .log-error { color: #bf616a; }
-    .log-system { color: #81a1c1; }
+    .log-system { color: #81a1c1; text-shadow: 0 0 5px rgba(129, 161, 193, 0.2); }
+    .log-info { color: #777; }
 
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #252525; border-radius: 10px; }
 </style>
 </head>
 
@@ -132,7 +137,7 @@
 <div id="tabs-container">
     <div id="tabs"></div>
     <div class="add-btn" id="add-tab-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5V19M5 12H19" /></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5V19M5 12H19" /></svg>
     </div>
 </div>
 
@@ -140,13 +145,14 @@
     <div id="editor" style="height: 100%;"></div>
 </div>
 
-<div id="console-wrapper" id="console-outer">
+<div id="console-wrapper">
     <div id="console-panel">
-        <div id="console-header" onclick="toggleConsole()">
-            <span>TERMINAL</span>
-            <div class="header-actions">
-                <div class="action-btn" onclick="event.stopPropagation(); clearConsole()">CLEAR</div>
-                <div id="fold-icon" style="color:#555">▼</div>
+        <div id="console-header">
+            <span>TERMINAL OUTPUT</span>
+            <div class="collapse-trigger" onclick="toggleConsole()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
             </div>
         </div>
         <div id="console-logs"></div>
@@ -163,12 +169,13 @@ require(['vs/editor/editor.main'], () => {
             'editor.background': '#101010',
             'editor.lineHighlightBackground': '#181818',
             'editorCursor.foreground': '#ffd700',
-            'editorLineNumber.activeForeground': '#ffd700'
+            'editorLineNumber.activeForeground': '#ffd700',
+            'editor.selectionBackground': '#222'
         }
     });
 
     window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'main.lua', code: 'print("Hello World")' }
+        { id: 'script_1', name: 'main.lua', code: '-- Welcome\nprint("Editor Active")' }
     ];
     window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
 
@@ -178,20 +185,26 @@ require(['vs/editor/editor.main'], () => {
         fontFamily: "'JetBrains Mono', monospace", padding: { top: 12 }
     });
 
-    // --- Tab Logic ---
     const tabsDiv = document.getElementById('tabs');
-    function save() {
-        localStorage.setItem('lua_tabs', JSON.stringify(tabs));
-        localStorage.setItem('lua_active', activeTab);
-    }
 
     function renderTabs() {
         tabsDiv.innerHTML = '';
         tabs.forEach(t => {
             const tab = document.createElement('div');
             tab.className = 'tab' + (t.id === activeTab ? ' active' : '');
-            tab.innerHTML = `<span class="tab-label">${t.name}</span><div class="close">×</div>`;
+            
+            // 重新加入 SVG 叉叉按鈕
+            tab.innerHTML = `
+                <span class="tab-label">${t.name}</span>
+                <div class="close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </div>
+            `;
+
             tab.onclick = () => { activeTab = t.id; save(); renderTabs(); loadTab(); };
+            
             tab.querySelector('.close').onclick = (e) => {
                 e.stopPropagation();
                 if (tabs.length === 1) return;
@@ -204,16 +217,21 @@ require(['vs/editor/editor.main'], () => {
         });
     }
 
-    document.getElementById('add-tab-btn').onclick = () => {
-        const id = 'script_' + Date.now();
-        tabs.push({ id, name: 'untitled.lua', code: '' });
-        activeTab = id; save(); renderTabs(); loadTab();
-    };
+    function save() {
+        localStorage.setItem('lua_tabs', JSON.stringify(tabs));
+        localStorage.setItem('lua_active', activeTab);
+    }
 
     function loadTab() {
         const t = tabs.find(x => x.id === activeTab);
         if (t) { editor.setValue(t.code); editor.focus(); }
     }
+
+    document.getElementById('add-tab-btn').onclick = () => {
+        const id = 'script_' + Date.now();
+        tabs.push({ id, name: 'untitled.lua', code: '' });
+        activeTab = id; save(); renderTabs(); loadTab();
+    };
 
     editor.onDidChangeModelContent(() => {
         const t = tabs.find(x => x.id === activeTab);
@@ -221,16 +239,23 @@ require(['vs/editor/editor.main'], () => {
     });
 
     renderTabs(); loadTab();
+
+    // 啟動成功日誌
+    setTimeout(() => {
+        pushLog("Editor loaded successfully.", "system");
+    }, 100);
 });
 
-// --- Console Logic ---
 window.toggleConsole = function() {
     const wrapper = document.getElementById('console-wrapper');
-    const icon = document.getElementById('fold-icon');
     wrapper.classList.toggle('collapsed');
-    icon.innerHTML = wrapper.classList.contains('collapsed') ? '▲' : '▼';
-    // 摺疊時通知 Monaco 調整佈局
-    setTimeout(() => { window.editor.layout(); }, 310);
+    
+    // 平滑重新佈局
+    let count = 0;
+    const interval = setInterval(() => {
+        window.editor.layout();
+        if (count++ > 35) clearInterval(interval);
+    }, 10);
 };
 
 window.pushLog = function(msg, type = 'info') {
@@ -238,13 +263,9 @@ window.pushLog = function(msg, type = 'info') {
     const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const div = document.createElement('div');
     div.className = `log-item log-${type}`;
-    div.innerHTML = `<span class="log-time">${time}</span><span class="log-msg">${msg}</span>`;
+    div.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg">${msg}</span>`;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
-};
-
-window.clearConsole = function() {
-    document.getElementById('console-logs').innerHTML = '';
 };
 </script>
 </body>
