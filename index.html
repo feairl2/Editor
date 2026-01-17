@@ -245,20 +245,24 @@ require(['vs/editor/editor.main'], () => {
 });
 
 // --- Console 摺疊切換 (修正版) ---
-window.toggleConsole = function() {
+window.toggleConsole = function () {
     const wrapper = document.getElementById('console-wrapper');
     const isCollapsed = wrapper.classList.contains('collapsed');
-    
+
     if (isCollapsed) {
+        // 展開
         wrapper.classList.remove('collapsed');
+        wrapper.style.height = 'var(--console-height)';
     } else {
+        // 收起
         wrapper.classList.add('collapsed');
+        wrapper.style.height = '44px';
     }
-    
+
     // 平滑同步 Monaco 佈局
     let start = Date.now();
     const timer = setInterval(() => {
-        window.editor.layout();
+        if (window.editor) window.editor.layout();
         if (Date.now() - start > 400) clearInterval(timer);
     }, 16);
 };
