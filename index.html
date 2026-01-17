@@ -80,14 +80,10 @@
 
     /* ===== Console 區域 (徹底修復展開問題) ===== */
     #console-wrapper {
-        padding: 0 12px 12px 12px;
-        background: var(--bg-color);
-        height: var(--console-height);
-        flex-shrink: 0;
-        box-sizing: border-box;
-        transition: height 0.3s ease-in-out;
-        z-index: 100;
-    }
+    max-height: var(--console-height);
+    flex-shrink: 0;
+    transition: max-height 0.3s ease-in-out;
+}
 
     /* 摺疊狀態：強迫高度為 44px (Header 32 + Padding 12) */
     #console-wrapper.collapsed {
