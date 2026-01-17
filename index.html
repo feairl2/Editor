@@ -142,6 +142,9 @@ require(['vs/editor/editor.main'], () => {
             'editorCursor.foreground': '#ffd700',
             'editorLineNumber.activeForeground': '#ffd700'
         }
+        if (typeof window.initialVisible !== 'undefined') {
+        updateConsoleDisplay(window.initialVisible);
+    }
     });
 
     // 隨便初始化一些 Tabs
@@ -183,6 +186,20 @@ function clearConsole() {
     logDisplay.innerHTML = '';
     appendLog('控制台已清空', 'info');
 }
+
+function updateConsoleDisplay(visible) {
+    const wrapper = document.getElementById('console-wrapper');
+    if (visible) {
+        wrapper.style.display = 'block';
+    } else {
+        wrapper.style.display = 'none';
+    }
+
+    if (window.editor) {
+        window.editor.layout();
+    }
+}  
+    
 function setConsoleVisible(visible) {
     const wrapper = document.getElementById('console-wrapper');
     if (visible) {
