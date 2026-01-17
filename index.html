@@ -1,218 +1,99 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<title>Pro Editor - Console Integrated</title>
+    <meta charset="UTF-8" />
+    <style>
+        html, body {
+            margin: 0; padding: 0; height: 100%;
+            background: #101010;
+            font-family: "Segoe UI", sans-serif;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+        /* 編輯器區域 */
+        #editor { flex: 1; width: 100%; background: #101010; }
 
-<style>
-    html, body {
-        margin: 0;
-        height: 100%;
-        background: #101010;
-        font-family: -apple-system, "Segoe UI", sans-serif;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column; /* 垂直排列：Tab -> Editor -> Console */
-    }
+        /* Console 區域：預設隱藏，由 WinForm 控制 */
+        #console-wrapper {
+            height: 130px;
+            background: #101010;
+            padding: 0 12px 12px 12px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            display: none; /* 初始隱藏 */
+        }
 
-    /* ===== Tab 列 ===== */
-    #tabs-container {
-        display: flex;
-        align-items: center;
-        height: 44px; 
-        background: #101010; 
-        padding: 0 12px;
-        box-sizing: border-box;
-        flex-shrink: 0;
-    }
+        #console-panel {
+            background-color: #1a1a1a;
+            height: 100%; width: 100%;
+            border: 1px solid #282828;
+            border-radius: 10px;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+        }
 
-    #tabs { display: flex; align-items: center; gap: 6px; }
+        #console-header {
+            background: #222; padding: 6px 12px;
+            font-size: 11px; color: #555; letter-spacing: 1px;
+            border-bottom: 1px solid #282828;
+        }
 
-    .tab {
-        display: flex; align-items: center; height: 32px; padding: 0 12px;
-        color: #777; cursor: pointer; font-size: 13px; border-radius: 6px;
-        transition: all 0.2s; min-width: 100px; border: 1px solid transparent;
-    }
-    .tab.active {
-        background: #2a2a2a; color: #ffd700;
-        border: 1px solid rgba(255, 215, 0, 0.6);
-    }
+        #log-display {
+            flex: 1; padding: 10px; overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; color: #ccc;
+        }
 
-    /* ===== 編輯器區域：自動填滿中間 ===== */
-    #editor {
-        flex: 1; /* 佔據剩餘空間 */
-        width: 100%;
-    }
+        .log-line { margin-bottom: 4px; animation: slideIn 0.2s ease; }
+        .log-success { color: #ffd700; }
+        .log-error { color: #ff5f56; }
 
-    /* ===== 底部控制台區域 ===== */
-    #console-wrapper {
-        height: 110px; /* 控制台高度 */
-        background: #101010;
-        padding: 0 10px 10px 10px;
-        box-sizing: border-box;
-        flex-shrink: 0;
-    }
-
-    #console-panel {
-        background-color: #1a1a1a; /* 稍亮的灰色 */
-        height: 100%;
-        width: 100%;
-        border: 1px solid #282828;
-        border-radius: 10px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
-    }
-
-    #console-header {
-        background: #222;
-        padding: 6px 12px;
-        font-size: 11px;
-        color: #555;
-        letter-spacing: 1px;
-        border-bottom: 1px solid #282828;
-    }
-
-    #log-display {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        font-family: 'JetBrains Mono', 'Consolas', monospace;
-        font-size: 12px;
-        line-height: 1.5;
-    }
-
-    /* 訊息樣式 */
-    .log-line { margin-bottom: 4px; animation: slideIn 0.2s ease; }
-    .log-info { color: #888; }
-    .log-success { color: #81c784; }
-    .log-error { color: #e57373; }
-    
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateY(5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 滾動條樣式 */
-    #log-display::-webkit-scrollbar { width: 4px; }
-    #log-display::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-    /* 其他 UI 補丁 */
-    .add-btn {
-        width: 32px; height: 32px; margin-left: 10px; border-radius: 6px;
-        background: #1e1e1e; color: #888; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        border: 1px solid #333;
-    }
-</style>
+        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 </head>
-
 <body>
-
-<div id="tabs-container">
-    <div id="tabs"></div>
-    <div class="add-btn" id="add-tab-btn">+</div>
-</div>
-
-<div id="editor"></div>
-
-<div id="console-wrapper">
-    <div id="console-panel">
-        <div id="console-header">OUTPUT</div>
-        <div id="log-display">
-            <div class="log-line log-info">> Console has loaded.</div>
+    <div id="editor"></div>
+    <div id="console-wrapper">
+        <div id="console-panel">
+            <div id="console-header">OUTPUT</div>
+            <div id="log-display"></div>
         </div>
     </div>
-</div>
 
-<script>
-// --- Monaco Editor 配置 ---
-require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-require(['vs/editor/editor.main'], () => {
-    monaco.editor.defineTheme('custom-dark', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {
-            'editor.background': '#101010',
-            'editor.lineHighlightBackground': '#181818',
-            'editorCursor.foreground': '#ffd700',
-            'editorLineNumber.activeForeground': '#ffd700'
+    <script>
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        require(['vs/editor/editor.main'], () => {
+            window.editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '-- Feairl Team\nprint("Hello")',
+                language: 'lua',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                backgroundColor: '#101010'
+            });
+
+            // 如果 WinForm 預先注入了初始狀態，立即套用
+            if (typeof window.initialVisible !== 'undefined') {
+                updateConsoleDisplay(window.initialVisible);
+            }
+        });
+
+        function updateConsoleDisplay(visible) {
+            const wrapper = document.getElementById('console-wrapper');
+            wrapper.style.display = visible ? 'block' : 'none';
+            if (window.editor) window.editor.layout();
         }
-        if (typeof window.initialVisible !== 'undefined') {
-        updateConsoleDisplay(window.initialVisible);
-    }
-    });
 
-    // 隨便初始化一些 Tabs
-    window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
-        { id: 'script_1', name: 'main.lua', code: '-- Welcome to Pro Editor\nprint("Hello World")' }
-    ];
-    window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
-
-    window.editor = monaco.editor.create(document.getElementById('editor'), {
-        value: '',
-        language: 'lua',
-        theme: 'custom-dark',
-        automaticLayout: true, // 關鍵：確保調整大小後正常顯示
-        fontFamily: "'JetBrains Mono', monospace",
-        minimap: { enabled: false },
-        padding: { top: 12 }
-    });
-
-    // 邏輯省略 (同你原本的 renderTabs, loadTab, etc.)
-    // ... [此處保留你原本的 renderTabs() 和 loadTab() 函數內容] ...
-    
-    // 初始化執行
-    renderTabs();
-    loadTab();
-});
-
-// --- Console 功能函式 (供外圍呼叫) ---
-const logDisplay = document.getElementById('log-display');
-
-function appendLog(message, type = 'info') {
-    const div = document.createElement('div');
-    div.className = `log-line log-${type}`;
-    div.innerText = `> ${message}`;
-    logDisplay.appendChild(div);
-    logDisplay.scrollTop = logDisplay.scrollHeight;
-}
-
-function clearConsole() {
-    logDisplay.innerHTML = '';
-    appendLog('控制台已清空', 'info');
-}
-
-function updateConsoleDisplay(visible) {
-    const wrapper = document.getElementById('console-wrapper');
-    if (visible) {
-        wrapper.style.display = 'block';
-    } else {
-        wrapper.style.display = 'none';
-    }
-
-    if (window.editor) {
-        window.editor.layout();
-    }
-}  
-    
-function setConsoleVisible(visible) {
-    const wrapper = document.getElementById('console-wrapper');
-    if (visible) {
-        wrapper.style.display = 'block';
-    } else {
-        wrapper.style.display = 'none';
-    }
-
-    if (window.editor) {
-        window.editor.layout();
-    }
-}
-    
-</script>
+        function appendLog(msg, type) {
+            const div = document.createElement('div');
+            div.className = `log-line log-${type}`;
+            div.innerText = `> ${msg}`;
+            const display = document.getElementById('log-display');
+            display.appendChild(div);
+            display.scrollTop = display.scrollHeight;
+        }
+    </script>
 </body>
 </html>
