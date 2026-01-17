@@ -1,99 +1,203 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8" />
-    <style>
-        html, body {
-            margin: 0; padding: 0; height: 100%;
-            background: #101010;
-            font-family: "Segoe UI", sans-serif;
-            overflow: hidden;
-            display: flex; flex-direction: column;
-        }
+<meta charset="UTF-8" />
+<title>Pro Editor - Console Integrated</title>
 
-        /* 編輯器區域 */
-        #editor { flex: 1; width: 100%; background: #101010; }
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
-        /* Console 區域：預設隱藏，由 WinForm 控制 */
-        #console-wrapper {
-            height: 130px;
-            background: #101010;
-            padding: 0 12px 12px 12px;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            display: none; /* 初始隱藏 */
-        }
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        background: #101010;
+        font-family: -apple-system, "Segoe UI", sans-serif;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column; 
+    }
 
-        #console-panel {
-            background-color: #1a1a1a;
-            height: 100%; width: 100%;
-            border: 1px solid #282828;
-            border-radius: 10px;
-            display: flex; flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
-        }
+    /* ===== Tab 列 ===== */
+    #tabs-container {
+        display: flex;
+        align-items: center;
+        height: 44px; 
+        background: #101010; 
+        padding: 0 12px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
 
-        #console-header {
-            background: #222; padding: 6px 12px;
-            font-size: 11px; color: #555; letter-spacing: 1px;
-            border-bottom: 1px solid #282828;
-        }
+    #tabs { display: flex; align-items: center; gap: 6px; }
 
-        #log-display {
-            flex: 1; padding: 10px; overflow-y: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px; color: #ccc;
-        }
+    .tab {
+        display: flex; align-items: center; height: 32px; padding: 0 12px;
+        color: #777; cursor: pointer; font-size: 13px; border-radius: 6px;
+        transition: all 0.2s; min-width: 100px; border: 1px solid transparent;
+    }
+    .tab.active {
+        background: #2a2a2a; color: #ffd700;
+        border: 1px solid rgba(255, 215, 0, 0.6);
+    }
 
-        .log-line { margin-bottom: 4px; animation: slideIn 0.2s ease; }
-        .log-success { color: #ffd700; }
-        .log-error { color: #ff5f56; }
+    /* ===== 編輯器區域 ===== */
+    #editor {
+        flex: 1; 
+        width: 100%;
+    }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    /* ===== 底部控制台區域 ===== */
+    #console-wrapper {
+        height: 180px; 
+        background: #101010;
+        padding: 0 15px 15px 15px; /* 調整為 0 15 15 15 消除頂部多餘間距 */
+        box-sizing: border-box;
+        flex-shrink: 0;
+        display: none; /* 【修改】預設隱藏控制台 */
+    }
+
+    #console-panel {
+        background-color: #1a1a1a; 
+        height: 100%;
+        width: 100%;
+        border: 1px solid #282828;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+    }
+
+    #console-header {
+        background: #222;
+        padding: 6px 12px;
+        font-size: 11px;
+        color: #555;
+        letter-spacing: 1px;
+        border-bottom: 1px solid #282828;
+    }
+
+    #log-display {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        font-family: 'JetBrains Mono', 'Consolas', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #ccc;
+    }
+
+    .log-line { margin-bottom: 4px; animation: slideIn 0.2s ease; }
+    .log-info { color: #888; }
+    .log-success { color: #ffd700; } /* 配合主題顏色 */
+    .log-error { color: #e57373; }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    #log-display::-webkit-scrollbar { width: 4px; }
+    #log-display::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+    .add-btn {
+        width: 32px; height: 32px; margin-left: 10px; border-radius: 6px;
+        background: #1e1e1e; color: #888; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid #333;
+    }
+</style>
 </head>
+
 <body>
-    <div id="editor"></div>
-    <div id="console-wrapper">
-        <div id="console-panel">
-            <div id="console-header">OUTPUT</div>
-            <div id="log-display"></div>
+
+<div id="tabs-container">
+    <div id="tabs"></div>
+    <div class="add-btn" id="add-tab-btn">+</div>
+</div>
+
+<div id="editor"></div>
+
+<div id="console-wrapper">
+    <div id="console-panel">
+        <div id="console-header">OUTPUT</div>
+        <div id="log-display">
+            <div class="log-line log-info">> 控制台已就緒...</div>
         </div>
     </div>
+</div>
 
-    <script>
-        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-        require(['vs/editor/editor.main'], () => {
-            window.editor = monaco.editor.create(document.getElementById('editor'), {
-                value: '-- Feairl Team\nprint("Hello")',
-                language: 'lua',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                backgroundColor: '#101010'
-            });
-
-            // 如果 WinForm 預先注入了初始狀態，立即套用
-            if (typeof window.initialVisible !== 'undefined') {
-                updateConsoleDisplay(window.initialVisible);
-            }
-        });
-
-        function updateConsoleDisplay(visible) {
-            const wrapper = document.getElementById('console-wrapper');
-            wrapper.style.display = visible ? 'block' : 'none';
-            if (window.editor) window.editor.layout();
+<script>
+require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+require(['vs/editor/editor.main'], () => {
+    monaco.editor.defineTheme('custom-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [],
+        colors: {
+            'editor.background': '#101010',
+            'editor.lineHighlightBackground': '#181818',
+            'editorCursor.foreground': '#ffd700',
+            'editorLineNumber.activeForeground': '#ffd700'
         }
+    });
 
-        function appendLog(msg, type) {
+    window.tabs = JSON.parse(localStorage.getItem('lua_tabs')) || [
+        { id: 'script_1', name: 'main.lua', code: '-- Welcome to Pro Editor\nprint("Hello World")' }
+    ];
+    window.activeTab = localStorage.getItem('lua_active') || tabs[0].id;
+
+    window.editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '',
+        language: 'lua',
+        theme: 'custom-dark',
+        automaticLayout: true,
+        fontFamily: "'JetBrains Mono', monospace",
+        minimap: { enabled: false },
+        padding: { top: 12 }
+    });
+
+    // 這裡補上你原本的 renderTabs 和 loadTab 邏輯...
+    // [簡化演示用]
+    function renderTabs() { 
+        const container = document.getElementById('tabs');
+        container.innerHTML = '';
+        tabs.forEach(t => {
             const div = document.createElement('div');
-            div.className = `log-line log-${type}`;
-            div.innerText = `> ${msg}`;
-            const display = document.getElementById('log-display');
-            display.appendChild(div);
-            display.scrollTop = display.scrollHeight;
-        }
-    </script>
+            div.className = 'tab' + (t.id === activeTab ? ' active' : '');
+            div.innerText = t.name;
+            div.onclick = () => { activeTab = t.id; renderTabs(); loadTab(); };
+            container.appendChild(div);
+        });
+    }
+    function loadTab() {
+        const t = tabs.find(x => x.id === activeTab);
+        if (t) editor.setValue(t.code);
+    }
+    
+    renderTabs();
+    loadTab();
+});
+
+// --- 【重要】控制顯示隱藏的函式 ---
+function setConsoleVisible(visible) {
+    const wrapper = document.getElementById('console-wrapper');
+    wrapper.style.display = visible ? 'block' : 'none';
+    
+    // 隱藏/顯示後，強制編輯器重新調整大小填滿剩餘空間
+    if (window.editor) {
+        window.editor.layout();
+    }
+}
+
+const logDisplay = document.getElementById('log-display');
+function appendLog(message, type = 'info') {
+    const div = document.createElement('div');
+    div.className = `log-line log-${type}`;
+    div.innerText = `> ${message}`;
+    logDisplay.appendChild(div);
+    logDisplay.scrollTop = logDisplay.scrollHeight;
+}
+</script>
 </body>
 </html>
